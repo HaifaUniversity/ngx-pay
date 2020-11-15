@@ -22,6 +22,7 @@ import {
   UOH_ENVIRONMENT_FACTORY,
 } from './models/environment.model';
 import { UohPaymentService } from './services/uoh-payment.service';
+import { UohPaymentPageComponent } from './components/uoh-payment-page/uoh-payment-page.component';
 
 export function resolvePaymentURL(
   environment: UohEnvironment,
@@ -66,6 +67,7 @@ export function resolvePaymentService(
 
 @NgModule({
   imports: [CommonModule, HttpClientModule],
+  declarations: [UohPaymentPageComponent],
 })
 export class UohPaymentModule {
   constructor(@Optional() @SkipSelf() parentModule?: UohPaymentModule) {
