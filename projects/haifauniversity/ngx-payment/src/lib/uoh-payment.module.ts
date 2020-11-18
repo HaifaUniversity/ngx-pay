@@ -9,65 +9,22 @@ import {
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import {
-  UohEnvironment,
   UohEnvironmentModule,
   UOH_ENVIRONMENT,
 } from '@haifauniversity/ngx-tools';
 
-import {
-  UohPaymentConfig,
-  UohPaymentOptions,
-  UOH_PAYMENT_CONFIG,
-  UOH_PAYMENT_OPTIONS,
-  UOH_PAYMENT_DEFAULT_OPTIONS,
-  getOrigin,
-  getEnvironmentURL,
-  UohPaymentURL,
-} from './models/config.model';
+import { UOH_PAYMENT_CONFIG } from './models/config.model';
 import { UohPaymentService } from './services/uoh-payment.service';
 import { UohPaymentPageComponent } from './components/uoh-payment-page/uoh-payment-page.component';
 import { UohPaymentDialogComponent } from './components/payment-dialog/uoh-payment-dialog.component';
-
-export function resolvePaymentURL(
-  environment: UohEnvironment,
-  options: UohPaymentOptions
-): string {
-  if (!!options && !!options.url) {
-    return typeof options.url === 'string'
-      ? options.url
-      : getEnvironmentURL(environment, options.url);
-  }
-
-  return getEnvironmentURL(
-    environment,
-    UOH_PAYMENT_DEFAULT_OPTIONS.url as UohPaymentURL
-  );
-}
-
-export function resolvePaymentConfig(
-  environment: UohEnvironment,
-  options: UohPaymentOptions
-): UohPaymentConfig {
-  const url = resolvePaymentURL(environment, options);
-  const origin = getOrigin(url);
-  const local = !!options && !!options.local;
-
-  return {
-    interval: UOH_PAYMENT_DEFAULT_OPTIONS.interval,
-    maxAttempts: UOH_PAYMENT_DEFAULT_OPTIONS.maxAttempts,
-    ...options,
-    url,
-    origin,
-    local,
-  };
-}
-
-export function resolvePaymentService(
-  httpBackend: HttpBackend,
-  config: UohPaymentConfig
-): UohPaymentService {
-  return new UohPaymentService(httpBackend, config);
-}
+import {
+  UOH_PAYMENT_DEFAULT_OPTIONS,
+  UOH_PAYMENT_OPTIONS,
+} from './config/defaults';
+import {
+  resolvePaymentConfig,
+  resolvePaymentService,
+} from './config/functions';
 
 @NgModule({
   imports: [
