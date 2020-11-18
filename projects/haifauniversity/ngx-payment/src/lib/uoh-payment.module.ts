@@ -6,21 +6,24 @@ import {
   Optional,
   SkipSelf,
 } from '@angular/core';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import {
+  UohEnvironment,
+  UohEnvironmentModule,
+  UOH_ENVIRONMENT,
+} from '@haifauniversity/ngx-tools';
+
 import {
   UohPaymentConfig,
   UohPaymentOptions,
   UOH_PAYMENT_CONFIG,
   UOH_PAYMENT_OPTIONS,
   UOH_PAYMENT_DEFAULT_OPTIONS,
-} from './models/config.model';
-import {
-  getEnvironmentURL,
   getOrigin,
-  UohEnvironment,
-  UohEnvironmentURL,
-  UOH_ENVIRONMENT,
-  UOH_ENVIRONMENT_FACTORY,
-} from './models/environment.model';
+  getEnvironmentURL,
+  UohPaymentURL,
+} from './models/config.model';
 import { UohPaymentService } from './services/uoh-payment.service';
 import { UohPaymentPageComponent } from './components/uoh-payment-page/uoh-payment-page.component';
 import { UohPaymentDialogComponent } from './components/payment-dialog/uoh-payment-dialog.component';
@@ -37,7 +40,7 @@ export function resolvePaymentURL(
 
   return getEnvironmentURL(
     environment,
-    UOH_PAYMENT_DEFAULT_OPTIONS.url as UohEnvironmentURL
+    UOH_PAYMENT_DEFAULT_OPTIONS.url as UohPaymentURL
   );
 }
 
@@ -67,7 +70,13 @@ export function resolvePaymentService(
 }
 
 @NgModule({
-  imports: [CommonModule, HttpClientModule],
+  imports: [
+    CommonModule,
+    HttpClientModule,
+    MatDialogModule,
+    MatIconModule,
+    UohEnvironmentModule,
+  ],
   declarations: [UohPaymentPageComponent, UohPaymentDialogComponent],
   entryComponents: [UohPaymentDialogComponent],
 })
@@ -86,7 +95,6 @@ export class UohPaymentModule {
     return {
       ngModule: UohPaymentModule,
       providers: [
-        UOH_ENVIRONMENT_FACTORY,
         {
           provide: UOH_PAYMENT_OPTIONS,
           useValue: options,

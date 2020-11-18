@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@angular/core';
 import { HttpClient, HttpBackend } from '@angular/common/http';
 import { Observable, interval } from 'rxjs';
 import { switchMap, first, tap } from 'rxjs/operators';
+import { UohStore } from '@haifauniversity/ngx-tools';
 
 import { Payment, PaymentStatus } from '../models/payment.model';
-import { Store } from '../models/store.model';
 import { UohPaymentConfig, UOH_PAYMENT_CONFIG } from '../models/config.model';
 
 /**
@@ -12,7 +12,7 @@ import { UohPaymentConfig, UOH_PAYMENT_CONFIG } from '../models/config.model';
  */
 @Injectable()
 export class UohPaymentService {
-  private store = new Store<Payment>(
+  private store = new UohStore<Payment>(
     { status: PaymentStatus.Pending },
     'uoh-payment'
   );
