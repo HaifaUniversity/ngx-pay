@@ -3,45 +3,44 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "@uoh/ngx-payment": {
+    "@haifauniversity/ngx-payment": {
       "projectType": "library",
-      "root": "projects/uoh/ngx-payment",
-      "sourceRoot": "projects/uoh/ngx-payment/src",
+      "root": "projects/haifauniversity/ngx-payment",
+      "sourceRoot": "projects/haifauniversity/ngx-payment/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "tsConfig": "projects/uoh/ngx-payment/tsconfig.lib.json",
-            "project": "projects/uoh/ngx-payment/ng-package.json"
+            "tsConfig": "projects/haifauniversity/ngx-payment/tsconfig.lib.json",
+            "project": "projects/haifauniversity/ngx-payment/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/uoh/ngx-payment/tsconfig.lib.prod.json"
+              "tsConfig": "projects/haifauniversity/ngx-payment/tsconfig.lib.prod.json"
             }
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/uoh/ngx-payment/src/test.ts",
-            "tsConfig": "projects/uoh/ngx-payment/tsconfig.spec.json",
-            "karmaConfig": "projects/uoh/ngx-payment/karma.conf.js"
+            "main": "projects/haifauniversity/ngx-payment/src/test.ts",
+            "tsConfig": "projects/haifauniversity/ngx-payment/tsconfig.spec.json",
+            "karmaConfig": "projects/haifauniversity/ngx-payment/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/uoh/ngx-payment/tsconfig.lib.json",
-              "projects/uoh/ngx-payment/tsconfig.spec.json"
+              "projects/haifauniversity/ngx-payment/tsconfig.lib.json",
+              "projects/haifauniversity/ngx-payment/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
-    }},
-  "defaultProject": "@uoh/ngx-payment"
+    }
+  },
+  "defaultProject": "@haifauniversity/ngx-payment"
 }

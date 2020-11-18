@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
-  selector: 'lib-uoh-payment-page',
+  selector: 'uoh-payment-page',
   templateUrl: './uoh-payment-page.component.html',
   styleUrls: ['./uoh-payment-page.component.css'],
 })

@@ -1,5 +1,5 @@
 {
-  "name": "uoh-ngx-payment",
+  "name": "ngx-payment",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "pack-dist": "cd dist/uoh/ngx-payment && npm pack",
+    "pack-dist": "cd dist/haifauniversity/ngx-payment && npm pack",
     "pack": "ng build --prod && npm run pack-dist"
   },
   "private": true,

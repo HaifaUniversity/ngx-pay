@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/ng-packagr/ng-package.schema.json",
-  "dest": "../../../dist/uoh/ngx-payment",
+  "dest": "../../../dist/haifauniversity/ngx-payment",
   "lib": {
     "entryFile": "src/public-api.ts"
   }
