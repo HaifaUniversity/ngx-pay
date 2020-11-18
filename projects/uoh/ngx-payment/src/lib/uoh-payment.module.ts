@@ -23,6 +23,7 @@ import {
 } from './models/environment.model';
 import { UohPaymentService } from './services/uoh-payment.service';
 import { UohPaymentPageComponent } from './components/uoh-payment-page/uoh-payment-page.component';
+import { UohPaymentDialogComponent } from './components/payment-dialog/uoh-payment-dialog.component';
 
 export function resolvePaymentURL(
   environment: UohEnvironment,
@@ -67,7 +68,8 @@ export function resolvePaymentService(
 
 @NgModule({
   imports: [CommonModule, HttpClientModule],
-  declarations: [UohPaymentPageComponent],
+  declarations: [UohPaymentPageComponent, UohPaymentDialogComponent],
+  entryComponents: [UohPaymentDialogComponent],
 })
 export class UohPaymentModule {
   constructor(@Optional() @SkipSelf() parentModule?: UohPaymentModule) {
