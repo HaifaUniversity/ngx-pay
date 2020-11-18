@@ -5,7 +5,8 @@
     "@angular/common": "^10.2.0",
     "@angular/core": "^10.2.0",
     "@angular/material": "^10.2.2",
-    "@haifauniversity/ngx-theme": "^10.0.0"
+    "@uoh/ngx-theme": "^10.0.0",
+    "@haifauniversity/ngx-tools": "^0.0.1"
   },
   "dependencies": {
     "tslib": "^2.0.0"
