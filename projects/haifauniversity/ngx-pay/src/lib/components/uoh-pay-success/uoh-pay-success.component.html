@@ -1,5 +1,21 @@
 <div class="uoh-pay-success-wrapper" role="rowgroup">
-  <div role="row">סה״כ הסכום ששולם: {{ payment.sum | currency: 'ILS':true:'1.2-2' }}</div>
-  <div role="row">מספר אישור: {{ payment.confirmationCode }}</div>
-  <div role="row">תאריך התשלום: {{ payment.receivedAt | date: 'short' }}</div>
+  <div class="uoh-pay-success-row uoh-success" role="row">התשלום התקבל בהצלחה</div>
+  <div class="uoh-pay-success-row" role="row">
+    <span class="uoh-pay-success-label"> סה״כ הסכום ששולם: </span>
+    <span class="uoh-pay-success-value">
+      {{ payment.sum | currency: 'ILS':true:'1.2-2' }}
+    </span>
+  </div>
+  <div class="uoh-pay-success-row" role="row">
+    <span class="uoh-pay-success-label"> מספר אישור: </span>
+    <span class="uoh-pay-success-value">
+      {{ payment.confirmationCode }}
+    </span>
+  </div>
+  <div class="uoh-pay-success-row" role="row">
+    <span class="uoh-pay-success-label"> תאריך התשלום: </span>
+    <span class="uoh-pay-success-value">
+      {{ payment.receivedAt | date: 'short' }}
+    </span>
+  </div>
 </div>
