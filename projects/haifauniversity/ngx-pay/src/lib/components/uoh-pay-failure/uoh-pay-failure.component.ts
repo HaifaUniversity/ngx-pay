@@ -1,4 +1,5 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { UohPayment, UohPaymentStatus } from '../../models/payment.model';
 import { UohPay } from '../../services/uoh-pay.service';
 
@@ -8,7 +9,7 @@ import { UohPay } from '../../services/uoh-pay.service';
   styleUrls: ['./uoh-pay-failure.component.css'],
 })
 export class UohPayFailureComponent implements OnInit {
-  payment: UohPayment;
+  payment$: Observable<UohPayment>;
   status = UohPaymentStatus;
   @Input() token: string;
   @HostBinding('class') class = 'uoh-pay-failure';
@@ -16,6 +17,6 @@ export class UohPayFailureComponent implements OnInit {
   constructor(private pay: UohPay) {}
 
   ngOnInit(): void {
-    this.payment = this.pay.payment;
+    this.payment$ = this.pay.payment$;
   }
 }

@@ -1,19 +1,21 @@
-<div *ngIf="payment.status === status.Failure; else pendingTemplate" class="uoh-error">
-  התשלום נכשל.
-  {{
-    payment.creditResponse
-      ? 'קוד שגיאה: ' + payment.creditResponse
-      : 'העסקה אינה מאושרת על ידי חברת האשראי, אנא בדוק את תקפות הכרטיס או נסה עם כרטיס אחר.'
-  }}
-</div>
-
-<ng-template #pendingTemplate>
-  <div class="uoh-error">
-    לא ניתן לשלוף את פרטי התשלום.<br />
-    נא לפנות אל מוקד התמיכה.<br />
-    קוד השגיא:
-    <span>
-      {{ token }}
-    </span>
+<ng-container *ngIf="payment$ | async as payment">
+  <div *ngIf="payment.status === status.Failure; else pendingTemplate" class="uoh-error">
+    התשלום נכשל.
+    {{
+      payment.creditResponse
+        ? 'קוד שגיאה: ' + payment.creditResponse
+        : 'העסקה אינה מאושרת על ידי חברת האשראי, אנא בדוק את תקפות הכרטיס או נסה עם כרטיס אחר.'
+    }}
   </div>
-</ng-template>
+
+  <ng-template #pendingTemplate>
+    <div class="uoh-error">
+      לא ניתן לשלוף את פרטי התשלום.<br />
+      נא לפנות אל מוקד התמיכה.<br />
+      קוד השגיא:
+      <span>
+        {{ token }}
+      </span>
+    </div>
+  </ng-template>
+</ng-container>
