@@ -67,7 +67,7 @@ export function resolvePaymentConfig(environment: UohEnvironment, options: UohPa
   const local = !!options && !!options.local;
 
   if (!!options && !!options.url && !options.url.includes(UOH_TERMINAL_PLACEHOLDER)) {
-    throw new Error(`The terminal url shoud contain the following pattern ${UOH_TERMINAL_PLACEHOLDER}`);
+    throw new Error(`The terminal url should include the following pattern ${UOH_TERMINAL_PLACEHOLDER}`);
   }
 
   return {
