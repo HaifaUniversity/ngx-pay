@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core';
 
-export interface UohPaymentConfig {
+export interface UohPayConfig {
   url: string;
   origin: string;
   interval: number;
@@ -8,19 +8,19 @@ export interface UohPaymentConfig {
   local: boolean;
 }
 
-export interface UohPaymentURL {
+export interface UohPayURL {
   development: string;
   qa: string;
   production: string;
 }
 
-export interface UohPaymentOptions {
-  url?: UohPaymentURL | string;
+export interface UohPayOptions {
+  url?: UohPayURL | string;
   interval?: number;
   maxAttempts?: number;
   local?: boolean;
 }
 
-export const UOH_PAYMENT_CONFIG = new InjectionToken<UohPaymentConfig>(
+export const UOH_PAY_CONFIG = new InjectionToken<UohPayConfig>(
   'The resolved configuration for the UOH payment service.'
 );

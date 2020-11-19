@@ -1,11 +1,11 @@
-export enum PaymentStatus {
+export enum UohPaymentStatus {
   Pending = 'pending',
   Success = 'success',
   Failure = 'failure',
 }
 
-export interface Payment {
-  status: PaymentStatus;
+export interface UohPayment {
+  status: UohPaymentStatus;
   confirmationCode?: string;
   sum?: number;
   receivedAt?: string;

@@ -13,9 +13,9 @@
     "module": "es2020",
     "lib": ["es2018", "dom"],
     "paths": {
-      "@haifauniversity/ngx-payment": [
-        "dist/haifauniversity/ngx-payment/uoh-ngx-payment",
-        "dist/haifauniversity/ngx-payment"
+      "@haifauniversity/ngx-pay": [
+        "dist/haifauniversity/ngx-pay/uoh-ngx-pay",
+        "dist/haifauniversity/ngx-pay"
       ]
     }
   }

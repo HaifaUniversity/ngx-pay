@@ -13,10 +13,10 @@ import {
   UOH_ENVIRONMENT,
 } from '@haifauniversity/ngx-tools';
 
-import { UOH_PAYMENT_CONFIG } from './models/config.model';
-import { UohPaymentService } from './services/uoh-payment.service';
-import { UohPaymentPageComponent } from './components/uoh-payment-page/uoh-payment-page.component';
-import { UohPaymentDialogComponent } from './components/payment-dialog/uoh-payment-dialog.component';
+import { UOH_PAY_CONFIG } from './models/config.model';
+import { UohPay } from './services/uoh-pay.service';
+import { UohPayPageComponent } from './components/uoh-pay-page/uoh-pay-page.component';
+import { UohPayDialogComponent } from './components/uoh-pay-dialog/uoh-pay-dialog.component';
 import {
   UOH_PAYMENT_DEFAULT_OPTIONS,
   UOH_PAYMENT_OPTIONS,
@@ -34,11 +34,11 @@ import {
     MatIconModule,
     UohEnvironmentModule,
   ],
-  declarations: [UohPaymentPageComponent, UohPaymentDialogComponent],
-  entryComponents: [UohPaymentDialogComponent],
+  declarations: [UohPayPageComponent, UohPayDialogComponent],
+  entryComponents: [UohPayDialogComponent],
 })
-export class UohPaymentModule {
-  constructor(@Optional() @SkipSelf() parentModule?: UohPaymentModule) {
+export class UohPayModule {
+  constructor(@Optional() @SkipSelf() parentModule?: UohPayModule) {
     if (!!parentModule) {
       throw new Error(
         'UohPaymentModule is already loaded. Import it in the AppModule only.'
@@ -48,23 +48,23 @@ export class UohPaymentModule {
 
   static forRoot(
     options = UOH_PAYMENT_DEFAULT_OPTIONS
-  ): ModuleWithProviders<UohPaymentModule> {
+  ): ModuleWithProviders<UohPayModule> {
     return {
-      ngModule: UohPaymentModule,
+      ngModule: UohPayModule,
       providers: [
         {
           provide: UOH_PAYMENT_OPTIONS,
           useValue: options,
         },
         {
-          provide: UOH_PAYMENT_CONFIG,
+          provide: UOH_PAY_CONFIG,
           useFactory: resolvePaymentConfig,
           deps: [UOH_ENVIRONMENT, UOH_PAYMENT_OPTIONS],
         },
         {
-          provide: UohPaymentService,
+          provide: UohPay,
           useFactory: resolvePaymentService,
-          deps: [HttpBackend, UOH_PAYMENT_CONFIG],
+          deps: [HttpBackend, UOH_PAY_CONFIG],
         },
       ],
     };

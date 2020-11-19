@@ -1,11 +1,11 @@
 .mat-dialog-title {
   display: flex;
   align-items: center;
+}
 
-  .mat-icon {
-    margin-right: 7px;
-    opacity: 0.82;
-  }
+.mat-dialog-title .mat-icon {
+  margin-right: 7px;
+  opacity: 0.82;
 }
 
 :host-context([dir="rtl"]) .mat-dialog-title .mat-icon {

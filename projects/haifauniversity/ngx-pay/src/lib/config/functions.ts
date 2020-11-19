@@ -1,11 +1,7 @@
 import { HttpBackend } from '@angular/common/http';
 import { UohEnvironment } from '@haifauniversity/ngx-tools';
-import {
-  UohPaymentConfig,
-  UohPaymentOptions,
-  UohPaymentURL,
-} from '../models/config.model';
-import { UohPaymentService } from '../services/uoh-payment.service';
+import { UohPayConfig, UohPayOptions, UohPayURL } from '../models/config.model';
+import { UohPay } from '../services/uoh-pay.service';
 import { UOH_PAYMENT_DEFAULT_OPTIONS } from './defaults';
 
 /**
@@ -42,7 +38,7 @@ export function getOrigin(input: string): string {
  */
 export function getEnvironmentURL(
   environment: UohEnvironment,
-  url: UohPaymentURL
+  url: UohPayURL
 ): string {
   if (environment === UohEnvironment.Development) {
     return url.development;
@@ -60,7 +56,7 @@ export function getEnvironmentURL(
  */
 export function resolvePaymentURL(
   environment: UohEnvironment,
-  options: UohPaymentOptions
+  options: UohPayOptions
 ): string {
   if (!!options && !!options.url) {
     return typeof options.url === 'string'
@@ -70,7 +66,7 @@ export function resolvePaymentURL(
 
   return getEnvironmentURL(
     environment,
-    UOH_PAYMENT_DEFAULT_OPTIONS.url as UohPaymentURL
+    UOH_PAYMENT_DEFAULT_OPTIONS.url as UohPayURL
   );
 }
 
@@ -81,8 +77,8 @@ export function resolvePaymentURL(
  */
 export function resolvePaymentConfig(
   environment: UohEnvironment,
-  options: UohPaymentOptions
-): UohPaymentConfig {
+  options: UohPayOptions
+): UohPayConfig {
   const url = resolvePaymentURL(environment, options);
   const origin = getOrigin(url);
   const local = !!options && !!options.local;
@@ -104,7 +100,7 @@ export function resolvePaymentConfig(
  */
 export function resolvePaymentService(
   httpBackend: HttpBackend,
-  config: UohPaymentConfig
-): UohPaymentService {
-  return new UohPaymentService(httpBackend, config);
+  config: UohPayConfig
+): UohPay {
+  return new UohPay(httpBackend, config);
 }

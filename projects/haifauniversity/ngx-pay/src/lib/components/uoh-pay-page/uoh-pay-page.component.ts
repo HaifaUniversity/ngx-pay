@@ -2,11 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
-  selector: 'uoh-payment-page',
-  templateUrl: './uoh-payment-page.component.html',
-  styleUrls: ['./uoh-payment-page.component.css'],
+  selector: 'uoh-pay-page',
+  templateUrl: './uoh-pay-page.component.html',
+  styleUrls: ['./uoh-pay-page.component.css'],
 })
-export class UohPaymentPageComponent implements OnInit {
+export class UohPayPageComponent implements OnInit {
   sanitizedUrl: SafeResourceUrl;
   @Input() width = '100px';
   @Input() height = '480';
