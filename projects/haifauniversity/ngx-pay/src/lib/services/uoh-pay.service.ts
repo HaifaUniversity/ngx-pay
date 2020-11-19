@@ -159,6 +159,7 @@ export class UohPay {
    * Checks if the selected theme is the dark-theme.
    */
   private isDarkTheme(): boolean {
+    // TODO: Use a uoh theme service to get the theme mode (in future versions).
     try {
       const theme = localStorage.getItem('theme');
 
