@@ -13,8 +13,6 @@ import { UohPayCurrency, UohPayLanguage, UohPayParams, UohPayTheme } from '../mo
  */
 @Injectable()
 export class UohPay {
-  private readonly BASE_URL = 'https://direct.tranzila.com/{terminal}/iframenew.php?';
-  private readonly TERMINAL_PATTERN = '{terminal}';
   private store = new UohStore<UohPayment>({ status: UohPaymentStatus.Pending }, 'uoh-payment');
   private http: HttpClient;
   payment$ = this.store.state$;
@@ -34,7 +32,8 @@ export class UohPay {
    * @param customParams Custom parameters to sent to the terminal.
    */
   buildUrl(terminal: string, params: UohPayParams, customParams?: HttpParams): string {
-    const url = this.buildTerminalUrl(this.BASE_URL, this.TERMINAL_PATTERN, terminal);
+    // Get the base url for the payment page by setting the terminal name in the config url.
+    const url = this.config.url.replace(this.config.placeholder, terminal);
     let mappedParams = this.mapParams(params);
 
     // Merge and override the basic params with the custom ones.
@@ -96,7 +95,7 @@ export class UohPay {
    * @param token The payment token.
    */
   get(token: string): Observable<UohPayment> {
-    const url = `${this.config.url}/status/${token}`;
+    const url = `${this.config.api}/status/${token}`;
 
     return this.http.get<UohPayment>(url).pipe(tap((payment) => this.store.setState(payment)));
   }
@@ -167,19 +166,5 @@ export class UohPay {
     } catch (e) {}
 
     return false;
-  }
-
-  /**
-   * Builds the base url for the payment page (terminal url).
-   * @param template The template for the url.
-   * @param pattern The pattern to replace in the template.
-   * @param terminal The terminal name to replace the pattern with.
-   */
-  private buildTerminalUrl(template: string, pattern: string, terminal: string): string {
-    if (!template.includes(pattern)) {
-      throw new Error(`The terminal url shoud contain the following pattern ${this.TERMINAL_PATTERN}`);
-    }
-
-    return template.replace(pattern, terminal);
   }
 }

@@ -1,8 +1,8 @@
 import { HttpBackend } from '@angular/common/http';
 import { UohEnvironment } from '@haifauniversity/ngx-tools';
-import { UohPayConfig, UohPayOptions, UohPayURL } from '../models/config.model';
+import { UohPayConfig, UohPayOptions, UohPayApi } from '../models/config.model';
 import { UohPay } from '../services/uoh-pay.service';
-import { UOH_PAYMENT_DEFAULT_OPTIONS } from './defaults';
+import { UOH_PAY_DEFAULT_OPTIONS, UOH_TERMINAL_PLACEHOLDER } from './defaults';
 
 /**
  * This file contains a set of functions to be used internally (not exposed to the users of this package).
@@ -22,52 +22,38 @@ export function getOrigin(input: string): string {
     // If it fails, fallback to get a slice of the string.
     // Retrieve the position of the first slash that is not followed by another slash.
     const doubleSlash = input.indexOf('//');
-    const firstSlash =
-      doubleSlash > -1
-        ? input.indexOf('/', doubleSlash + 2)
-        : input.indexOf('/');
+    const firstSlash = doubleSlash > -1 ? input.indexOf('/', doubleSlash + 2) : input.indexOf('/');
 
     return firstSlash > -1 ? input.substring(0, firstSlash) : input;
   }
 }
 
 /**
- * Returns the url that corresponds to the running environment.
+ * Returns the api url that corresponds to the running environment.
  * @param environment The environment the application is running on (dev, qa or prod).
- * @param url The object containing a different url for each environment.
+ * @param api The object containing a different api url for each environment.
  */
-export function getEnvironmentURL(
-  environment: UohEnvironment,
-  url: UohPayURL
-): string {
+export function getEnvironmentApi(environment: UohEnvironment, api: UohPayApi): string {
   if (environment === UohEnvironment.Development) {
-    return url.development;
+    return api.development;
   } else if (environment === UohEnvironment.QA) {
-    return url.qa;
+    return api.qa;
   } else {
-    return url.production;
+    return api.production;
   }
 }
 
 /**
- * Returns the payment URL that corresponds the running environment.
+ * Returns the payment api url that corresponds the running environment.
  * @param environment The environment the application is running on.
  * @param options The payment options entered by the user.
  */
-export function resolvePaymentURL(
-  environment: UohEnvironment,
-  options: UohPayOptions
-): string {
-  if (!!options && !!options.url) {
-    return typeof options.url === 'string'
-      ? options.url
-      : getEnvironmentURL(environment, options.url);
+export function resolvePaymentApi(environment: UohEnvironment, options: UohPayOptions): string {
+  if (!!options && !!options.api) {
+    return typeof options.api === 'string' ? options.api : getEnvironmentApi(environment, options.api);
   }
 
-  return getEnvironmentURL(
-    environment,
-    UOH_PAYMENT_DEFAULT_OPTIONS.url as UohPayURL
-  );
+  return getEnvironmentApi(environment, UOH_PAY_DEFAULT_OPTIONS.api as UohPayApi);
 }
 
 /**
@@ -75,19 +61,22 @@ export function resolvePaymentURL(
  * @param environment The environment the application is running on.
  * @param options The payment options entered by the user.
  */
-export function resolvePaymentConfig(
-  environment: UohEnvironment,
-  options: UohPayOptions
-): UohPayConfig {
-  const url = resolvePaymentURL(environment, options);
-  const origin = getOrigin(url);
+export function resolvePaymentConfig(environment: UohEnvironment, options: UohPayOptions): UohPayConfig {
+  const api = resolvePaymentApi(environment, options);
+  const origin = getOrigin(api);
   const local = !!options && !!options.local;
 
+  if (!!options && !!options.url && !options.url.includes(UOH_TERMINAL_PLACEHOLDER)) {
+    throw new Error(`The terminal url shoud contain the following pattern ${UOH_TERMINAL_PLACEHOLDER}`);
+  }
+
   return {
-    interval: UOH_PAYMENT_DEFAULT_OPTIONS.interval,
-    maxAttempts: UOH_PAYMENT_DEFAULT_OPTIONS.maxAttempts,
+    interval: UOH_PAY_DEFAULT_OPTIONS.interval,
+    maxAttempts: UOH_PAY_DEFAULT_OPTIONS.maxAttempts,
+    url: UOH_PAY_DEFAULT_OPTIONS.url,
+    placeholder: UOH_TERMINAL_PLACEHOLDER,
     ...options,
-    url,
+    api,
     origin,
     local,
   };
@@ -98,9 +87,6 @@ export function resolvePaymentConfig(
  * @param httpBackend The Angular HttpBackend service.
  * @param config The configuration for the payment service.
  */
-export function resolvePaymentService(
-  httpBackend: HttpBackend,
-  config: UohPayConfig
-): UohPay {
+export function resolvePaymentService(httpBackend: HttpBackend, config: UohPayConfig): UohPay {
   return new UohPay(httpBackend, config);
 }
