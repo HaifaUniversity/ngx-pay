@@ -1,5 +1,5 @@
 {
-  "name": "@haifauniversity/ngx-payment",
+  "name": "@haifauniversity/ngx-pay",
   "version": "0.0.1",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"

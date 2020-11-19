@@ -1,5 +1,5 @@
 /*
- * Public API Surface of ngx-payment
+ * Public API Surface of ngx-pay
  */
 
 export * from './lib/services/uoh-pay.service';

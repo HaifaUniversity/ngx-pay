@@ -18,7 +18,7 @@ module.exports = function (config) {
     coverageIstanbulReporter: {
       dir: require("path").join(
         __dirname,
-        "../../../coverage/haifauniversity/ngx-payment"
+        "../../../coverage/haifauniversity/ngx-pay"
       ),
       reports: ["html", "lcovonly", "text-summary"],
       fixWebpackSourcePaths: true,
