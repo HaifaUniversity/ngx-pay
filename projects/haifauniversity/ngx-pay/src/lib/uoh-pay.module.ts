@@ -25,6 +25,8 @@ import {
   resolvePaymentConfig,
   resolvePaymentService,
 } from './config/functions';
+import { UohPaySuccessComponent } from './components/uoh-pay-success/uoh-pay-success.component';
+import { UohPayFailureComponent } from './components/uoh-pay-failure/uoh-pay-failure.component';
 
 @NgModule({
   imports: [
@@ -34,7 +36,7 @@ import {
     MatIconModule,
     UohEnvironmentModule,
   ],
-  declarations: [UohPayPageComponent, UohPayDialogComponent],
+  declarations: [UohPayPageComponent, UohPayDialogComponent, UohPaySuccessComponent, UohPayFailureComponent],
   entryComponents: [UohPayDialogComponent],
 })
 export class UohPayModule {

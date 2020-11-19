@@ -1,12 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  HostListener,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UohLogger, UohLogLevel } from '@haifauniversity/ngx-tools';
@@ -55,6 +47,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    * Fires true if the payment was successful, false otherwise.
    */
   @Output() paid = new EventEmitter<boolean>();
+  @HostBinding('class') class = 'uoh-pay-page';
   private subscription = new Subscription();
 
   constructor(
@@ -67,12 +60,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Log the sanitized url for the terminal page.
     const url = this.sanitizedUrl ? this.sanitizedUrl.toString() : undefined;
-    this.logger.info(
-      'Payment initialized for url',
-      url,
-      'for token',
-      this.token
-    );
+    this.logger.info('Payment initialized for url', url, 'for token', this.token);
   }
 
   ngOnDestroy(): void {
@@ -99,12 +87,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   @HostListener('window:beforeunload', ['$event'])
   shouldExit(event: BeforeUnloadEvent): boolean {
-    this.logger.log(
-      UohLogLevel.DEBUG,
-      false,
-      'Window before unload event occurred. Payment token:',
-      this.token
-    );
+    this.logger.log(UohLogLevel.DEBUG, false, 'Window before unload event occurred. Payment token:', this.token);
 
     // Ask the user if he/she really wants to unload this application.
     event.preventDefault();
@@ -133,15 +116,10 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
           this.pay
             .onComplete(this.token)
             .pipe(
-              tap((payment) =>
-                this.logger.info('On complete payment', JSON.stringify(payment))
-              ),
+              tap((payment) => this.logger.info('On complete payment', JSON.stringify(payment))),
               map((payment) => payment.status === UohPaymentStatus.Success),
               catchError((error) => {
-                this.logger.error(
-                  'On complete payment error:',
-                  JSON.stringify(error)
-                );
+                this.logger.error('On complete payment error:', JSON.stringify(error));
 
                 return of(false);
               })
@@ -187,9 +165,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
         map((deactivate) => !!deactivate),
         tap((deactivate) => this.logger.debug(`Deactivation: ${deactivate}`)),
         // If the payment was received autorize the deactivation in order to navigate to the confirmation/failure page.
-        switchMap((deactivate) =>
-          this.checkPayment().pipe(map((_) => deactivate))
-        )
+        switchMap((deactivate) => this.checkPayment().pipe(map((_) => deactivate)))
       );
   }
 }
