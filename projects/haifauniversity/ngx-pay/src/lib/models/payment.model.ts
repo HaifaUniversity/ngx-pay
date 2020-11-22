@@ -1,11 +1,11 @@
-export enum UohPaymentStatus {
-  Pending = 'pending',
-  Success = 'success',
-  Failure = 'failure',
-}
+import { UohPayStatus } from './status.model';
 
+/**
+ * The payment details retrieved from the api.
+ * If the payment is pending, only the status will be returned.
+ */
 export interface UohPayment {
-  status: UohPaymentStatus;
+  status: UohPayStatus;
   confirmationCode?: string;
   sum?: number;
   receivedAt?: string;

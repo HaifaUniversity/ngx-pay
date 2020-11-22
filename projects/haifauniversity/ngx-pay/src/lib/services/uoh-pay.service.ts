@@ -4,16 +4,24 @@ import { Observable, interval } from 'rxjs';
 import { switchMap, first, tap } from 'rxjs/operators';
 import { UohStore } from '@haifauniversity/ngx-tools';
 
-import { UohPayment, UohPaymentStatus } from '../models/payment.model';
-import { UohPayConfig, UOH_PAY_CONFIG } from '../models/config.model';
-import { UohPayCurrency, UohPayLanguage, UohPayParams, UohPayTheme } from '../models/params.model';
+import {
+  UohPayment,
+  UohPayStatus,
+  UohPayConfig,
+  UOH_PAY_CONFIG,
+  UohPayCurrency,
+  UohPayLanguage,
+  UohPayParams,
+  UohPayTheme,
+} from '../models';
+import { UohPayType } from '../models/type.model';
 
 /**
  * Retrieves the payment details from the payment API.
  */
 @Injectable()
 export class UohPay {
-  private store = new UohStore<UohPayment>({ status: UohPaymentStatus.Pending }, 'uoh-payment');
+  private store = new UohStore<UohPayment>({ status: UohPayStatus.Pending }, 'uoh-payment');
   private http: HttpClient;
   payment$ = this.store.state$;
 
@@ -59,20 +67,20 @@ export class UohPay {
    * For a secure implementation, use only after the isMessageValid method returned true.
    * @param event The message event.
    */
-  getStatus(event: MessageEvent): UohPaymentStatus {
+  getStatus(event: MessageEvent): UohPayStatus {
     try {
-      if (event.data.toLowerCase() === UohPaymentStatus.Success.toLowerCase()) {
-        this.store.setState({ status: UohPaymentStatus.Success });
+      if (event.data.toLowerCase() === UohPayStatus.Success.toLowerCase()) {
+        this.store.setState({ status: UohPayStatus.Success });
 
-        return UohPaymentStatus.Success;
-      } else if (event.data.toLowerCase() === UohPaymentStatus.Failure.toLowerCase()) {
-        this.store.setState({ status: UohPaymentStatus.Failure });
+        return UohPayStatus.Success;
+      } else if (event.data.toLowerCase() === UohPayStatus.Failure.toLowerCase()) {
+        this.store.setState({ status: UohPayStatus.Failure });
 
-        return UohPaymentStatus.Failure;
+        return UohPayStatus.Failure;
       }
     } catch (e) {}
 
-    return UohPaymentStatus.Pending;
+    return UohPayStatus.Pending;
   }
 
   /**
@@ -86,7 +94,7 @@ export class UohPay {
      */
     return interval(this.config.interval).pipe(
       switchMap((attempt) => this.checkAttempt(token, attempt)),
-      first((payment) => !!payment && payment.status !== UohPaymentStatus.Pending)
+      first((payment) => !!payment && payment.status !== UohPayStatus.Pending)
     );
   }
 
@@ -125,6 +133,8 @@ export class UohPay {
    * @param params The params for the payment page.
    */
   private mapParams(params: UohPayParams): HttpParams {
+    const type = this.getType(params.type);
+    const maxInstallments = this.getMaxInstallments(params.maxInstallments);
     const theme = params.theme ? params.theme : this.getTheme();
 
     return new HttpParams()
@@ -140,10 +150,28 @@ export class UohPay {
       .set('studentid', params.customer.id)
       .set('email', params.customer.email)
       .set('DCdisable', params.product.code)
+      .set('cred_type', type.toString())
+      .set('maxpay', maxInstallments.toString())
       .set('u71', '1')
       .set('trButtonColor', theme.button)
       .set('trBgColor', theme.background)
       .set('trTextColor', theme.text);
+  }
+
+  /**
+   * Retrieves the payment type. If undefined, returns the single payment type.
+   * @param type The payment type.
+   */
+  private getType(type: UohPayType): UohPayType {
+    return !!type ? type : UohPayType.Single;
+  }
+
+  /**
+   * Retrieves the maximum number of installments. If undefined, returns 1.
+   * @param maxInstallments The maximum number of installments.
+   */
+  private getMaxInstallments(maxInstallments: number): number {
+    return !!maxInstallments ? maxInstallments : 1;
   }
 
   /**
