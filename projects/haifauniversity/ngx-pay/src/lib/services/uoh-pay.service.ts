@@ -6,7 +6,7 @@ import { UohStore } from '@haifauniversity/ngx-tools';
 
 import {
   UohPayment,
-  UohPaymentStatus,
+  UohPayStatus,
   UohPayConfig,
   UOH_PAY_CONFIG,
   UohPayCurrency,
@@ -14,14 +14,16 @@ import {
   UohPayParams,
   UohPayTheme,
 } from '../models';
-import { UohPayType } from '../models/type.model';
+import { UohPayType, UOH_PAY_TYPE_ID } from '../models/type.model';
+import { UOH_PAY_CURRENCY_ID } from '../models/currency.model';
+import { UOH_PAY_DARK_THEME, UOH_PAY_DEFAULT_THEME } from '../models/theme.model';
 
 /**
  * Retrieves the payment details from the payment API.
  */
 @Injectable()
 export class UohPay {
-  private store = new UohStore<UohPayment>({ status: UohPaymentStatus.Pending }, 'uoh-payment');
+  private store = new UohStore<UohPayment>({ status: UohPayStatus.Pending }, 'uoh-payment');
   private http: HttpClient;
   payment$ = this.store.state$;
 
@@ -67,20 +69,20 @@ export class UohPay {
    * For a secure implementation, use only after the isMessageValid method returned true.
    * @param event The message event.
    */
-  getStatus(event: MessageEvent): UohPaymentStatus {
+  getStatus(event: MessageEvent): UohPayStatus {
     try {
-      if (event.data.toLowerCase() === UohPaymentStatus.Success.toLowerCase()) {
-        this.store.setState({ status: UohPaymentStatus.Success });
+      if (event.data.toLowerCase() === UohPayStatus.Success.toLowerCase()) {
+        this.store.setState({ status: UohPayStatus.Success });
 
-        return UohPaymentStatus.Success;
-      } else if (event.data.toLowerCase() === UohPaymentStatus.Failure.toLowerCase()) {
-        this.store.setState({ status: UohPaymentStatus.Failure });
+        return UohPayStatus.Success;
+      } else if (event.data.toLowerCase() === UohPayStatus.Failure.toLowerCase()) {
+        this.store.setState({ status: UohPayStatus.Failure });
 
-        return UohPaymentStatus.Failure;
+        return UohPayStatus.Failure;
       }
     } catch (e) {}
 
-    return UohPaymentStatus.Pending;
+    return UohPayStatus.Pending;
   }
 
   /**
@@ -94,7 +96,7 @@ export class UohPay {
      */
     return interval(this.config.interval).pipe(
       switchMap((attempt) => this.checkAttempt(token, attempt)),
-      first((payment) => !!payment && payment.status !== UohPaymentStatus.Pending)
+      first((payment) => !!payment && payment.status !== UohPayStatus.Pending)
     );
   }
 
@@ -133,13 +135,14 @@ export class UohPay {
    * @param params The params for the payment page.
    */
   private mapParams(params: UohPayParams): HttpParams {
+    const currency = this.getCurrency(params.currency);
     const type = this.getType(params.type);
     const maxInstallments = this.getMaxInstallments(params.maxInstallments);
     const theme = params.theme ? params.theme : this.getTheme();
 
     return new HttpParams()
       .set('lang', params.language ? params.language : UohPayLanguage.Hebrew)
-      .set('currency', params.currency ? params.currency.toString() : UohPayCurrency.ILS.toString())
+      .set('currency', currency.toString())
       .set('pdesc', params.product.description)
       .set('sum', params.sum.toString())
       .set('TranzilaToken', params.token)
@@ -158,12 +161,16 @@ export class UohPay {
       .set('trTextColor', theme.text);
   }
 
+  private getCurrency(currency: UohPayCurrency): number {
+    return UOH_PAY_CURRENCY_ID[!!currency ? currency : UohPayCurrency.ILS];
+  }
+
   /**
    * Retrieves the payment type. If undefined, returns the single payment type.
    * @param type The payment type.
    */
-  private getType(type: UohPayType): UohPayType {
-    return !!type ? type : UohPayType.SINGLE;
+  private getType(type: UohPayType): number {
+    return UOH_PAY_TYPE_ID[!!type ? type : UohPayType.Single];
   }
 
   /**
@@ -178,9 +185,7 @@ export class UohPay {
    * Retrieves the theme for the payment page.
    */
   private getTheme(): UohPayTheme {
-    return this.isDarkTheme()
-      ? { button: '0664aa', text: 'ffffff', background: '424242' }
-      : { button: '0664aa', text: '333333', background: 'ffffff' };
+    return this.isDarkTheme() ? UOH_PAY_DARK_THEME : UOH_PAY_DEFAULT_THEME;
   }
 
   /**

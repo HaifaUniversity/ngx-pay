@@ -8,5 +8,5 @@ export enum UohPayLanguage {
   Spanish = 'es',
   German = 'de',
   French = 'fr',
-  Japansese = 'jp',
+  Japanese = 'jp',
 }

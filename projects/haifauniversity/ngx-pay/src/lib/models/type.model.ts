@@ -1,17 +1,28 @@
 /**
- * The payment type (or cred_type in Tranzila).
+ * The payment type as represented by the api.
  */
 export enum UohPayType {
   /**
    * A single payment.
    */
-  SINGLE = 1,
+  Single = 'single',
   /**
    * Installments charged as credit (generally, the number of credit installments is greater than the regular installments).
    */
-  CREDIT = 6,
+  Credit = 'credit',
   /**
    * Regular installments (a sum divided into multiple payments).
    */
-  INSTALLMENTS = 8,
+  Installments = 'installments',
 }
+
+type UohPayTypeId = Record<UohPayType, number>;
+
+/**
+ * The payment type (or cred_type in Tranzila).
+ */
+export const UOH_PAY_TYPE_ID: UohPayTypeId = {
+  single: 1,
+  credit: 6,
+  installments: 8,
+};
