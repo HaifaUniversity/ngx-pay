@@ -1,7 +1,7 @@
 /**
  * Represents the division of the sum into payments.
  */
-export interface UohPayInstallments {
+export interface UohPaymentInstallments {
   /**
    * The total number of installments selected by the user.
    */

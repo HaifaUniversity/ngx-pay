@@ -1,19 +1,23 @@
 import { UohPayCurrency } from './currency.model';
-import { UohPayInstallments } from './installments.model';
-import { UohPayStatus } from './status.model';
+import { UohPaymentInstallments } from './installments.model';
+import { UohPaymentStatus } from './status.model';
 import { UohPayType } from './type.model';
+
+export type UohPaymentCurrency = keyof typeof UohPayCurrency;
+
+export type UohPaymentType = keyof typeof UohPayType;
 
 /**
  * The payment details retrieved from the api.
  * If the payment is pending, only the status will be returned.
  */
 export interface UohPayment {
-  status: UohPayStatus;
+  status: UohPaymentStatus;
   confirmationCode?: string;
   sum?: number;
-  currency?: UohPayCurrency;
+  currency?: UohPaymentCurrency;
   receivedAt?: string;
   creditResponse?: string;
-  type?: UohPayType;
-  installments?: UohPayInstallments;
+  type?: UohPaymentType;
+  installments?: UohPaymentInstallments;
 }

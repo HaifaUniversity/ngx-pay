@@ -6,7 +6,7 @@ import { UohStore } from '@haifauniversity/ngx-tools';
 
 import {
   UohPayment,
-  UohPayStatus,
+  UohPaymentStatus,
   UohPayConfig,
   UOH_PAY_CONFIG,
   UohPayCurrency,
@@ -21,7 +21,7 @@ import { UohPayType } from '../models/type.model';
  */
 @Injectable()
 export class UohPay {
-  private store = new UohStore<UohPayment>({ status: UohPayStatus.Pending }, 'uoh-payment');
+  private store = new UohStore<UohPayment>({ status: UohPaymentStatus.Pending }, 'uoh-payment');
   private http: HttpClient;
   payment$ = this.store.state$;
 
@@ -67,20 +67,20 @@ export class UohPay {
    * For a secure implementation, use only after the isMessageValid method returned true.
    * @param event The message event.
    */
-  getStatus(event: MessageEvent): UohPayStatus {
+  getStatus(event: MessageEvent): UohPaymentStatus {
     try {
-      if (event.data.toLowerCase() === UohPayStatus.Success.toLowerCase()) {
-        this.store.setState({ status: UohPayStatus.Success });
+      if (event.data.toLowerCase() === UohPaymentStatus.Success.toLowerCase()) {
+        this.store.setState({ status: UohPaymentStatus.Success });
 
-        return UohPayStatus.Success;
-      } else if (event.data.toLowerCase() === UohPayStatus.Failure.toLowerCase()) {
-        this.store.setState({ status: UohPayStatus.Failure });
+        return UohPaymentStatus.Success;
+      } else if (event.data.toLowerCase() === UohPaymentStatus.Failure.toLowerCase()) {
+        this.store.setState({ status: UohPaymentStatus.Failure });
 
-        return UohPayStatus.Failure;
+        return UohPaymentStatus.Failure;
       }
     } catch (e) {}
 
-    return UohPayStatus.Pending;
+    return UohPaymentStatus.Pending;
   }
 
   /**
@@ -94,7 +94,7 @@ export class UohPay {
      */
     return interval(this.config.interval).pipe(
       switchMap((attempt) => this.checkAttempt(token, attempt)),
-      first((payment) => !!payment && payment.status !== UohPayStatus.Pending)
+      first((payment) => !!payment && payment.status !== UohPaymentStatus.Pending)
     );
   }
 
@@ -163,7 +163,7 @@ export class UohPay {
    * @param type The payment type.
    */
   private getType(type: UohPayType): UohPayType {
-    return !!type ? type : UohPayType.Single;
+    return !!type ? type : UohPayType.SINGLE;
   }
 
   /**
