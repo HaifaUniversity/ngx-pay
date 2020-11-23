@@ -3,7 +3,7 @@
   <div class="uoh-pay-success-row" role="row">
     <span class="uoh-pay-success-label"> סה״כ הסכום ששולם: </span>
     <span class="uoh-pay-success-value">
-      {{ payment.sum | currency: 'ILS':true:'1.2-2' }}
+      {{ payment.sum | currency: payment.currency:true:'1.2-2' }}
     </span>
   </div>
   <div class="uoh-pay-success-row" role="row">
@@ -18,4 +18,30 @@
       {{ payment.receivedAt | date: 'short' }}
     </span>
   </div>
+  <div class="uoh-pay-success-row" role="row">
+    <span class="uoh-pay-success-label"> שולם באמצעות כרטיס אשראי המסתיים בספרות: </span>
+    <span class="uoh-pay-success-value">
+      {{ payment.cardNumber }}
+    </span>
+  </div>
+  <ng-container *ngIf="payment.type !== types.Single && !!payment.installments">
+    <div *ngIf="payment.installments.quantity" class="uoh-pay-success-row" role="row">
+      <span class="uoh-pay-success-label"> מספר תשלומים: </span>
+      <span class="uoh-pay-success-value">
+        {{ payment.installments.quantity }}
+      </span>
+    </div>
+    <div *ngIf="payment.installments.firstSum" class="uoh-pay-success-row" role="row">
+      <span class="uoh-pay-success-label"> סכום תשלום ראשון: </span>
+      <span class="uoh-pay-success-value">
+        {{ payment.installments.firstSum | currency: payment.currency:true:'1.2-2' }}
+      </span>
+    </div>
+    <div *ngIf="payment.installments.sum" class="uoh-pay-success-row" role="row">
+      <span class="uoh-pay-success-label"> סכום תשלום עוקב: </span>
+      <span class="uoh-pay-success-value">
+        {{ payment.installments.sum | currency: payment.currency:true:'1.2-2' }}
+      </span>
+    </div>
+  </ng-container>
 </div>

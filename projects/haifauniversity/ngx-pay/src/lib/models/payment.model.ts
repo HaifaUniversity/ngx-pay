@@ -15,5 +15,6 @@ export interface UohPayment {
   receivedAt?: string;
   creditResponse?: string;
   type?: UohPayType;
+  cardNumber?: string;
   installments?: UohPayInstallments;
 }
