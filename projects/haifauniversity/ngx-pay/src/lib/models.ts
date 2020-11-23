@@ -8,3 +8,4 @@ export * from './models/product.model';
 export * from './models/status.model';
 export * from './models/theme.model';
 export * from './models/type.model';
+export * from './models/installments.model';
