@@ -1,7 +1,6 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UohPayment } from '../../models/payment.model';
-import { UohPayType } from '../../models/type.model';
 import { UohPay } from '../../services/uoh-pay.service';
 
 @Component({
@@ -11,7 +10,6 @@ import { UohPay } from '../../services/uoh-pay.service';
 })
 export class UohPaySuccessComponent implements OnInit {
   payment$: Observable<UohPayment>;
-  types = UohPayType;
   @HostBinding('class') class = 'uoh-pay-success';
 
   constructor(private pay: UohPay) {}

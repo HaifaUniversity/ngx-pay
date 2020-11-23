@@ -24,7 +24,7 @@
       {{ payment.cardNumber }}
     </span>
   </div>
-  <ng-container *ngIf="payment.type !== types.Single && !!payment.installments">
+  <ng-container *ngIf="payment.installments">
     <div *ngIf="payment.installments.quantity" class="uoh-pay-success-row" role="row">
       <span class="uoh-pay-success-label"> מספר תשלומים: </span>
       <span class="uoh-pay-success-value">
