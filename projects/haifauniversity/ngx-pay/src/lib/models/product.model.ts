@@ -6,7 +6,4 @@ import { UohPayCurrency } from './currency.model';
 export interface UohPayProduct {
   description: string;
   code: string;
-  price?: number;
-  commission?: number;
-  currency?: UohPayCurrency;
 }

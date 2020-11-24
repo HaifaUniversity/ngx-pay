@@ -1,6 +1,5 @@
 import { UohPayCurrency } from './currency.model';
 import { UohPayInstallments } from './installments.model';
-import { UohPayProduct } from './product.model';
 import { UohPayStatus } from './status.model';
 import { UohPayType } from './type.model';
 
@@ -18,5 +17,4 @@ export interface UohPayment {
   type?: UohPayType;
   cardNumber?: string;
   installments?: UohPayInstallments;
-  product?: UohPayProduct;
 }

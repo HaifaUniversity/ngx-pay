@@ -31,21 +31,6 @@
     </span>
   </div>
 
-  <ng-container *ngIf="payment.product">
-    <div class="uoh-pay-success-row" role="row">
-      <span class="uoh-pay-success-label"> סכום (ללא דמי טיפול): </span>
-      <span class="uoh-pay-success-value">
-        {{ payment.product.price | currency: payment.product.currency:true:'1.2-2' }}
-      </span>
-    </div>
-    <div *ngIf="payment.product.commission" class="uoh-pay-success-row" role="row">
-      <span class="uoh-pay-success-label"> דמי טיפול: </span>
-      <span class="uoh-pay-success-value">
-        {{ payment.product.commission | currency: payment.product.currency:true:'1.2-2' }}
-      </span>
-    </div>
-  </ng-container>
-
   <ng-container *ngIf="payment.installments">
     <div *ngIf="payment.installments.quantity" class="uoh-pay-success-row" role="row">
       <span class="uoh-pay-success-label"> מספר תשלומים: </span>
