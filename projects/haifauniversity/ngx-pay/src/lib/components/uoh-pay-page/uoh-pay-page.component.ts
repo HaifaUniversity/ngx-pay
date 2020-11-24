@@ -4,7 +4,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UohLogger, UohLogLevel } from '@haifauniversity/ngx-tools';
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { UohPayment, UohPaymentStatus } from '../../models/payment.model';
+import { UohPayment } from '../../models/payment.model';
+import { UohPayStatus } from '../../models/status.model';
 import { UohPay } from '../../services/uoh-pay.service';
 import { UohPayDialogComponent } from '../uoh-pay-dialog/uoh-pay-dialog.component';
 
@@ -72,7 +73,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   canDeactivate(): Observable<boolean> | boolean {
     // If the status of the payment is still pending ask the user if he/she wants to navigate out.
-    if (this.pay.payment.status === UohPaymentStatus.Pending) {
+    if (this.pay.payment.status === UohPayStatus.Pending) {
       this.logger.debug('Deactivating pending payment with token:', this.token);
       return this.confirm();
     }
@@ -107,7 +108,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     // Check if the message event from the iframe is from a valid origin (the payment service).
     if (this.pay.isMessageValid(event)) {
       // If the message returns the status of failure navigate to the corresponding route.
-      if (this.pay.getStatus(event) === UohPaymentStatus.Failure) {
+      if (this.pay.getStatus(event) === UohPayStatus.Failure) {
         this.paid.emit(false);
       } else {
         // Else, wait until the payment service returns a completion status (either success or failure).
@@ -117,7 +118,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
             .onComplete(this.token)
             .pipe(
               tap((payment) => this.logger.info('On complete payment', JSON.stringify(payment))),
-              map((payment) => payment.status === UohPaymentStatus.Success),
+              map((payment) => payment.status === UohPayStatus.Success),
               catchError((error) => {
                 this.logger.error('On complete payment error:', JSON.stringify(error));
 
@@ -141,12 +142,12 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
       catchError((error) => {
         this.logger.error('Check payment error:', JSON.stringify(error));
 
-        return of({ status: UohPaymentStatus.Pending });
+        return of({ status: UohPayStatus.Pending });
       }),
       tap((payment) => {
         this.logger.info('Check payment:', JSON.stringify(payment));
-        if (!!payment && payment.status !== UohPaymentStatus.Pending) {
-          const success = payment.status === UohPaymentStatus.Success;
+        if (!!payment && payment.status !== UohPayStatus.Pending) {
+          const success = payment.status === UohPayStatus.Success;
           this.paid.emit(success);
         }
       })

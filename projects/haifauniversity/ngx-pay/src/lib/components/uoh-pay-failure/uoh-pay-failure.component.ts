@@ -1,6 +1,7 @@
 import { Component, HostBinding, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UohPayment, UohPaymentStatus } from '../../models/payment.model';
+import { UohPayment } from '../../models/payment.model';
+import { UohPayStatus } from '../../models/status.model';
 import { UohPay } from '../../services/uoh-pay.service';
 
 @Component({
@@ -10,7 +11,7 @@ import { UohPay } from '../../services/uoh-pay.service';
 })
 export class UohPayFailureComponent implements OnInit {
   payment$: Observable<UohPayment>;
-  status = UohPaymentStatus;
+  status = UohPayStatus;
   @Input() token: string;
   @HostBinding('class') class = 'uoh-pay-failure';
 
