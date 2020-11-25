@@ -11,12 +11,11 @@ import { UohPayPageComponent } from './components/uoh-pay-page/uoh-pay-page.comp
 import { UohPayDialogComponent } from './components/uoh-pay-dialog/uoh-pay-dialog.component';
 import { UOH_PAY_DEFAULT_OPTIONS, UOH_PAY_OPTIONS } from './config/defaults';
 import { resolvePaymentConfig, resolvePaymentService } from './config/functions';
-import { UohPayFailureComponent } from './components/uoh-pay-failure/uoh-pay-failure.component';
 
 @NgModule({
   imports: [CommonModule, HttpClientModule, MatDialogModule, MatIconModule, UohEnvironmentModule],
-  declarations: [UohPayPageComponent, UohPayDialogComponent, UohPayFailureComponent],
-  exports: [UohPayPageComponent, UohPayDialogComponent, UohPayFailureComponent],
+  declarations: [UohPayPageComponent, UohPayDialogComponent],
+  exports: [UohPayPageComponent, UohPayDialogComponent],
   entryComponents: [UohPayDialogComponent],
 })
 export class UohPayModule {
