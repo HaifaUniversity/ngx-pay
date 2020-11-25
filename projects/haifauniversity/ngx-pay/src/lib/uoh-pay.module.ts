@@ -17,6 +17,7 @@ import { UohPayFailureComponent } from './components/uoh-pay-failure/uoh-pay-fai
 @NgModule({
   imports: [CommonModule, HttpClientModule, MatDialogModule, MatIconModule, UohEnvironmentModule],
   declarations: [UohPayPageComponent, UohPayDialogComponent, UohPaySuccessComponent, UohPayFailureComponent],
+  exports: [UohPayPageComponent, UohPayDialogComponent, UohPaySuccessComponent, UohPayFailureComponent],
   entryComponents: [UohPayDialogComponent],
 })
 export class UohPayModule {
