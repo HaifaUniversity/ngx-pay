@@ -1,21 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { HttpBackend, HttpClientModule } from '@angular/common/http';
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
 import { UohEnvironmentModule, UOH_ENVIRONMENT } from '@haifauniversity/ngx-tools';
 
 import { UOH_PAY_CONFIG } from './models/config.model';
 import { UohPay } from './services/uoh-pay.service';
-import { UohPayDialogComponent } from './components/uoh-pay-dialog/uoh-pay-dialog.component';
 import { UOH_PAY_DEFAULT_OPTIONS, UOH_PAY_OPTIONS } from './config/defaults';
 import { resolvePaymentConfig, resolvePaymentService } from './config/functions';
 
 @NgModule({
-  imports: [CommonModule, HttpClientModule, MatDialogModule, MatIconModule, UohEnvironmentModule],
-  declarations: [UohPayDialogComponent],
-  exports: [UohPayDialogComponent],
-  entryComponents: [UohPayDialogComponent],
+  imports: [CommonModule, HttpClientModule, UohEnvironmentModule],
 })
 export class UohPayModule {
   constructor(@Optional() @SkipSelf() parentModule?: UohPayModule) {
