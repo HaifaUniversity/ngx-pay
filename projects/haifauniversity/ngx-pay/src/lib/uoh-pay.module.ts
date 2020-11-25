@@ -7,15 +7,14 @@ import { UohEnvironmentModule, UOH_ENVIRONMENT } from '@haifauniversity/ngx-tool
 
 import { UOH_PAY_CONFIG } from './models/config.model';
 import { UohPay } from './services/uoh-pay.service';
-import { UohPayPageComponent } from './components/uoh-pay-page/uoh-pay-page.component';
 import { UohPayDialogComponent } from './components/uoh-pay-dialog/uoh-pay-dialog.component';
 import { UOH_PAY_DEFAULT_OPTIONS, UOH_PAY_OPTIONS } from './config/defaults';
 import { resolvePaymentConfig, resolvePaymentService } from './config/functions';
 
 @NgModule({
   imports: [CommonModule, HttpClientModule, MatDialogModule, MatIconModule, UohEnvironmentModule],
-  declarations: [UohPayPageComponent, UohPayDialogComponent],
-  exports: [UohPayPageComponent, UohPayDialogComponent],
+  declarations: [UohPayDialogComponent],
+  exports: [UohPayDialogComponent],
   entryComponents: [UohPayDialogComponent],
 })
 export class UohPayModule {
