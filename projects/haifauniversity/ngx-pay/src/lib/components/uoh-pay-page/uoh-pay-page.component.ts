@@ -25,7 +25,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy, UohDeactivableCom
   /**
    * The width for the iframe.
    */
-  @Input() width = '100px';
+  @Input() width = '100%';
   /**
    * The height for the iframe.
    */
