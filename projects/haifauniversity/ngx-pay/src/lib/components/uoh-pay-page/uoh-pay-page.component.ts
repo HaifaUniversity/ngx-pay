@@ -1,7 +1,7 @@
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { UohLogger, UohLogLevel } from '@haifauniversity/ngx-tools';
+import { UohDeactivableComponent, UohLogger, UohLogLevel } from '@haifauniversity/ngx-tools';
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { UohPayment } from '../../models/payment.model';
@@ -17,7 +17,7 @@ import { UohPayDialogComponent } from '../uoh-pay-dialog/uoh-pay-dialog.componen
   templateUrl: './uoh-pay-page.component.html',
   styleUrls: ['./uoh-pay-page.component.css'],
 })
-export class UohPayPageComponent implements OnInit, OnDestroy {
+export class UohPayPageComponent implements OnInit, OnDestroy, UohDeactivableComponent {
   /**
    * The sanitized url for the terminal page.
    */
