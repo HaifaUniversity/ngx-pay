@@ -1,4 +1,4 @@
-<ng-container *ngIf="payment$ | async as payment">
+<ng-container>
   <div *ngIf="payment.status === status.Failure; else pendingTemplate" class="uoh-error">
     התשלום נכשל.
     {{
