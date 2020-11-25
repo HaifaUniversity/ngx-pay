@@ -6,24 +6,28 @@
       {{ payment.sum | currency: payment.currency:true:'1.2-2' }}
     </span>
   </div>
+  <mat-divider></mat-divider>
   <div class="uoh-pay-success-row" role="row">
     <span class="uoh-pay-success-label"> מספר אישור: </span>
     <span class="uoh-pay-success-value">
       {{ payment.confirmationCode }}
     </span>
   </div>
+  <mat-divider></mat-divider>
   <div class="uoh-pay-success-row" role="row">
     <span class="uoh-pay-success-label"> תאריך התשלום: </span>
     <span class="uoh-pay-success-value">
       {{ payment.receivedAt | date: 'dd/MM/yyyy hh:mm:ss' }}
     </span>
   </div>
+  <mat-divider></mat-divider>
   <div class="uoh-pay-success-row" role="row">
     <span class="uoh-pay-success-label"> שולם בכרטיס שמסתיים בספרות: </span>
     <span class="uoh-pay-success-value">
       {{ payment.cardNumber }}
     </span>
   </div>
+  <mat-divider></mat-divider>
   <div class="uoh-pay-success-row" role="row">
     <span class="uoh-pay-success-label"> אופן התשלום: </span>
     <span class="uoh-pay-success-value">
@@ -32,18 +36,21 @@
   </div>
 
   <ng-container *ngIf="payment.installments">
+    <mat-divider></mat-divider>
     <div *ngIf="payment.installments.quantity" class="uoh-pay-success-row" role="row">
       <span class="uoh-pay-success-label"> מספר תשלומים: </span>
       <span class="uoh-pay-success-value">
         {{ payment.installments.quantity }}
       </span>
     </div>
+    <mat-divider></mat-divider>
     <div *ngIf="payment.installments.firstSum" class="uoh-pay-success-row" role="row">
       <span class="uoh-pay-success-label"> סכום תשלום ראשון: </span>
       <span class="uoh-pay-success-value">
         {{ payment.installments.firstSum | currency: payment.currency:true:'1.2-2' }}
       </span>
     </div>
+    <mat-divider></mat-divider>
     <div *ngIf="payment.installments.sum" class="uoh-pay-success-row" role="row">
       <span class="uoh-pay-success-label"> סכום תשלום עוקב: </span>
       <span class="uoh-pay-success-value">

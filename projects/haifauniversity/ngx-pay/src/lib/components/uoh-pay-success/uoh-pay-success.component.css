@@ -6,3 +6,42 @@
   font-weight: bold;
   margin: 16px 0;
 }
+
+.uoh-pay-success-row {
+  display: flex;
+  padding: 16px 0;
+  align-items: center;
+}
+
+.uoh-pay-success-row .uoh-pay-success-label {
+  flex-basis: 16em;
+  font-weight: bold;
+  margin-right: 16px;
+  text-transform: uppercase;
+}
+
+:host-context([dir='rtl']) .uoh-pay-success-row .uoh-pay-success-label {
+  margin-right: 0;
+  margin-left: 16px;
+}
+
+/* TODO: Use uoh ngx-theme mixins and theme instead */
+@media screen and (max-width: 599.99px) {
+  .uoh-pay-success-row {
+    display: block;
+  }
+
+  .uoh-pay-success-row .uoh-pay-success-label,
+  .uoh-pay-success-row .uoh-pay-success-value {
+    width: 100%;
+    display: block;
+  }
+
+  .uoh-pay-success-row .uoh-pay-success-value {
+    margin-top: 8px;
+  }
+}
+
+.uoh-pay-success-row .uoh-pay-success-label {
+  opacity: 0.6;
+}
