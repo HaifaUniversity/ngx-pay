@@ -3,7 +3,6 @@ import { HttpBackend, HttpClientModule } from '@angular/common/http';
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDividerModule } from '@angular/material/divider';
 import { UohEnvironmentModule, UOH_ENVIRONMENT } from '@haifauniversity/ngx-tools';
 
 import { UOH_PAY_CONFIG } from './models/config.model';
@@ -12,13 +11,12 @@ import { UohPayPageComponent } from './components/uoh-pay-page/uoh-pay-page.comp
 import { UohPayDialogComponent } from './components/uoh-pay-dialog/uoh-pay-dialog.component';
 import { UOH_PAY_DEFAULT_OPTIONS, UOH_PAY_OPTIONS } from './config/defaults';
 import { resolvePaymentConfig, resolvePaymentService } from './config/functions';
-import { UohPaySuccessComponent } from './components/uoh-pay-success/uoh-pay-success.component';
 import { UohPayFailureComponent } from './components/uoh-pay-failure/uoh-pay-failure.component';
 
 @NgModule({
-  imports: [CommonModule, HttpClientModule, MatDialogModule, MatIconModule, MatDividerModule, UohEnvironmentModule],
-  declarations: [UohPayPageComponent, UohPayDialogComponent, UohPaySuccessComponent, UohPayFailureComponent],
-  exports: [UohPayPageComponent, UohPayDialogComponent, UohPaySuccessComponent, UohPayFailureComponent],
+  imports: [CommonModule, HttpClientModule, MatDialogModule, MatIconModule, UohEnvironmentModule],
+  declarations: [UohPayPageComponent, UohPayDialogComponent, UohPayFailureComponent],
+  exports: [UohPayPageComponent, UohPayDialogComponent, UohPayFailureComponent],
   entryComponents: [UohPayDialogComponent],
 })
 export class UohPayModule {
