@@ -27,6 +27,7 @@ export const UOH_PAY_TYPE_ID: UohPayTypeId = {
   installments: 8,
 };
 
+// TODO: Move the labels to i18n.
 export const UOH_PAY_TYPE_NAME_HE: Record<UohPayType, string> = {
   single: 'תשלום בודד',
   credit: 'תשלומים בקרדיט',
