@@ -26,3 +26,9 @@ export const UOH_PAY_TYPE_ID: UohPayTypeId = {
   credit: 6,
   installments: 8,
 };
+
+export const UOH_PAY_TYPE_NAME_HE: Record<UohPayType, string> = {
+  single: 'תשלום בודד',
+  credit: 'תשלומים בקרדיט',
+  installments: 'תשלומים',
+};
