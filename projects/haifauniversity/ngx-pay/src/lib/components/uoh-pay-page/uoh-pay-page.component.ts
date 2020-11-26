@@ -1,11 +1,12 @@
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { UohDeactivableComponent, UohLogger, UohLogLevel } from '@haifauniversity/ngx-tools';
+import { UohLogger, UohLogLevel } from '@haifauniversity/ngx-tools';
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { UohPayment } from '../../models/payment.model';
 import { UohPayStatus } from '../../models/status.model';
+import { UohPayDeactivate } from '../../services/uoh-pay-deactivate.service';
 import { UohPay } from '../../services/uoh-pay.service';
 import { UohPayDialogComponent } from '../uoh-pay-dialog/uoh-pay-dialog.component';
 
@@ -17,7 +18,7 @@ import { UohPayDialogComponent } from '../uoh-pay-dialog/uoh-pay-dialog.componen
   templateUrl: './uoh-pay-page.component.html',
   styleUrls: ['./uoh-pay-page.component.css'],
 })
-export class UohPayPageComponent implements OnInit, OnDestroy, UohDeactivableComponent {
+export class UohPayPageComponent implements OnInit, OnDestroy {
   /**
    * The sanitized url for the terminal page.
    */
@@ -55,31 +56,24 @@ export class UohPayPageComponent implements OnInit, OnDestroy, UohDeactivableCom
     private sanitizer: DomSanitizer,
     private dialog: MatDialog,
     private logger: UohLogger,
-    private pay: UohPay
+    private pay: UohPay,
+    private deactivate: UohPayDeactivate
   ) {}
 
   ngOnInit(): void {
     // Log the sanitized url for the terminal page.
     const url = this.sanitizedUrl ? this.sanitizedUrl.toString() : undefined;
     this.logger.info('Payment initialized for url', url, 'for token', this.token);
+    // Check if the component can be deactivated when the guard emits a deactivation request.
+    this.subscription.add(
+      this.deactivate.request$
+        .pipe(switchMap((_) => this.canDeactivate()))
+        .subscribe((deactivate) => this.deactivate.onResponse(deactivate))
+    );
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
-  }
-
-  /**
-   * This method will be called before each navigation from this component to verify if it can be deactivated.
-   */
-  canDeactivate(): Observable<boolean> | boolean {
-    // If the status of the payment is still pending ask the user if he/she wants to navigate out.
-    if (this.pay.payment.status === UohPayStatus.Pending) {
-      this.logger.debug('Deactivating pending payment with token:', this.token);
-      return this.confirm();
-    }
-
-    // If the payment was received (succedeed or failed) the user may navigate to another route.
-    return true;
   }
 
   /**
@@ -132,8 +126,38 @@ export class UohPayPageComponent implements OnInit, OnDestroy, UohDeactivableCom
   }
 
   /**
+   * This method will be called before each navigation from this component to verify if it can be deactivated.
+   */
+  private canDeactivate(): Observable<boolean> {
+    // If the status of the payment is still pending ask the user if he/she wants to navigate out.
+    if (this.pay.payment.status === UohPayStatus.Pending) {
+      this.logger.debug('Deactivating pending payment with token:', this.token);
+      return this.confirm();
+    }
+
+    // If the payment was received (succedeed or failed) the user may navigate to another route.
+    return of(true);
+  }
+
+  /**
+   * Displays a confirmation dialog when the user tries to leave this route.
+   */
+  private confirm(): Observable<boolean> {
+    return this.dialog
+      .open(UohPayDialogComponent, { direction: 'rtl' })
+      .afterClosed()
+      .pipe(
+        // Coerce to boolean - convert undefined response to false.
+        map((deactivate) => !!deactivate),
+        tap((deactivate) => this.logger.debug(`Deactivation: ${deactivate}`)),
+        // If the payment was received autorize the deactivation and emit the result using the paid event emitter.
+        switchMap((deactivate) => this.checkPayment().pipe(map((_) => deactivate)))
+      );
+  }
+
+  /**
    * Checks (once) if the payment was received (either successfull or failed).
-   * If so, navigates to the corresponding route.
+   * If so, it emits the result using the paid event emitter.
    */
   private checkPayment(): Observable<UohPayment> {
     this.logger.debug('Check payment for token:', this.token);
@@ -152,21 +176,5 @@ export class UohPayPageComponent implements OnInit, OnDestroy, UohDeactivableCom
         }
       })
     );
-  }
-
-  /**
-   * Displays a confirmation dialog when the user tries to leave this route.
-   */
-  private confirm(): Observable<boolean> {
-    return this.dialog
-      .open(UohPayDialogComponent, { direction: 'rtl' })
-      .afterClosed()
-      .pipe(
-        // Coerce to boolean - convert undefined response to false.
-        map((deactivate) => !!deactivate),
-        tap((deactivate) => this.logger.debug(`Deactivation: ${deactivate}`)),
-        // If the payment was received autorize the deactivation in order to navigate to the confirmation/failure page.
-        switchMap((deactivate) => this.checkPayment().pipe(map((_) => deactivate)))
-      );
   }
 }
