@@ -49,10 +49,9 @@ export class UohPayUrlBuilder {
   private mapParams(params: UohPayParams): HttpParams {
     const currency = this.getCurrency(params.currency);
     const type = this.getType(params.type);
-    const maxInstallments = this.getMaxInstallments(params.maxInstallments);
     const theme = params.theme ? params.theme : this.getTheme();
 
-    return new HttpParams()
+    let result = new HttpParams()
       .set('lang', params.language ? params.language : UohPayLanguage.Hebrew)
       .set('currency', currency.toString())
       .set('pdesc', params.product.description)
@@ -65,12 +64,21 @@ export class UohPayUrlBuilder {
       .set('studentid', params.customer.id)
       .set('email', params.customer.email)
       .set('DCdisable', params.product.code)
-      .set('cred_type', type.toString())
-      .set('maxpay', maxInstallments.toString())
+      .set('cred_type', type.toString());
+
+    // Add the maxpay parameter if the maxInstallments parameter was set or if the type is not a single payment.
+    if (!!params.maxInstallments || (!!params.type && params.type !== UohPayType.Single)) {
+      const maxInstallments = this.getMaxInstallments(params.maxInstallments);
+      result = result.set('maxpay', maxInstallments.toString());
+    }
+
+    result = result
       .set('u71', '1')
       .set('trButtonColor', theme.button)
       .set('trBgColor', theme.background)
       .set('trTextColor', theme.text);
+
+    return result;
   }
 
   private getCurrency(currency: UohPayCurrency): number {
