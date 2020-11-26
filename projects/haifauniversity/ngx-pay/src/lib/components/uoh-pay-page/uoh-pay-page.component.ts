@@ -143,16 +143,19 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    * Displays a confirmation dialog when the user tries to leave this route.
    */
   private confirm(): Observable<boolean> {
-    return this.dialog
-      .open(UohPayDialogComponent, { direction: 'rtl' })
-      .afterClosed()
-      .pipe(
-        // Coerce to boolean - convert undefined response to false.
-        map((deactivate) => !!deactivate),
-        tap((deactivate) => this.logger.debug(`Deactivation: ${deactivate}`)),
-        // If the payment was received autorize the deactivation and emit the result using the paid event emitter.
-        switchMap((deactivate) => this.checkPayment().pipe(map((_) => deactivate)))
-      );
+    return (
+      this.dialog
+        // TODO: Retrieve the direction from the language settings.
+        .open(UohPayDialogComponent, { direction: 'rtl' })
+        .afterClosed()
+        .pipe(
+          // Coerce to boolean - convert undefined response to false.
+          map((deactivate) => !!deactivate),
+          tap((deactivate) => this.logger.debug(`Deactivation: ${deactivate}`)),
+          // If the payment was received autorize the deactivation and emit the result using the paid event emitter.
+          switchMap((deactivate) => this.checkPayment().pipe(map((_) => deactivate)))
+        )
+    );
   }
 
   /**
