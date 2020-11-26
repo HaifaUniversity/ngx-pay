@@ -1,6 +1,6 @@
 {
   "name": "@haifauniversity/ngx-pay",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
@@ -9,7 +9,7 @@
     "@angular/core": "^10.0.0",
     "@angular/material": "^10.0.0",
     "@uoh/ngx-theme": "^10.0.0",
-    "@haifauniversity/ngx-tools": "^0.0.1"
+    "@haifauniversity/ngx-tools": "^0.0.2"
   },
   "dependencies": {
     "tslib": "^2.0.0"
