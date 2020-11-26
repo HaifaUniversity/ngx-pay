@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 /**
@@ -8,7 +8,7 @@ import { filter } from 'rxjs/operators';
 @Injectable({ providedIn: 'root' })
 export class UohPayDeactivate {
   private request = new Subject<void>();
-  private response = new Subject<boolean>();
+  private response = new BehaviorSubject<boolean>(undefined);
   request$ = this.request.asObservable();
 
   /**
