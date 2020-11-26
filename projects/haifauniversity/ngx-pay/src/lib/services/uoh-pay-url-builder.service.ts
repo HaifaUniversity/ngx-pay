@@ -66,8 +66,8 @@ export class UohPayUrlBuilder {
       .set('DCdisable', params.product.code)
       .set('cred_type', type.toString());
 
-    // Add the maxpay parameter if the maxInstallments parameter was set or if the type is not a single payment.
-    if (!!params.maxInstallments || (!!params.type && params.type !== UohPayType.Single)) {
+    // Add the maxpay parameter is not a single payment.
+    if (!!params.type && params.type !== UohPayType.Single) {
       const maxInstallments = this.getMaxInstallments(params.maxInstallments);
       result = result.set('maxpay', maxInstallments.toString());
     }
