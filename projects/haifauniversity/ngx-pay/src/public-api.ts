@@ -4,6 +4,7 @@
 
 export * from './lib/models';
 export * from './lib/services/uoh-pay.service';
+export * from './lib/services/uoh-pay-url-builder.service';
 export * from './lib/uoh-pay.module';
 // TODO: Move each component and module to its own export file.
 export * from './lib/components/uoh-pay-dialog/uoh-pay-dialog.component';
