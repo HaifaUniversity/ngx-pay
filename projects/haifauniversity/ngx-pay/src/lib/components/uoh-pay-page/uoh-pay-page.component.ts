@@ -68,7 +68,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.deactivate.request$
         .pipe(switchMap((_) => this.canDeactivate()))
-        .subscribe((deactivate) => this.deactivate.onResponse(deactivate))
+        .subscribe((deactivate) => this.deactivate.sendResponse(deactivate))
     );
   }
 

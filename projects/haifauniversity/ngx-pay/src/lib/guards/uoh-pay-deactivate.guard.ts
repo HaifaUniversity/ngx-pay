@@ -26,10 +26,8 @@ export class UohPayDeactivateGuard<T> implements CanDeactivate<T> {
     nextState: RouterStateSnapshot
   ): Observable<boolean> | boolean {
     // Send a deactivation request to the page component using the service.
-    this.deactivate.onRequest();
-
-    // The deactivation logic resides in the page component itselft.
+    // The deactivation logic resides in the page component itself.
     // Return the response emitted by the page.
-    return this.deactivate.response$;
+    return this.deactivate.sendRequest();
   }
 }
