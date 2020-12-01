@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { HttpClient, HttpBackend } from '@angular/common/http';
-import { Observable, interval } from 'rxjs';
-import { switchMap, first, tap } from 'rxjs/operators';
+import { Observable, interval, of } from 'rxjs';
+import { switchMap, first, tap, catchError } from 'rxjs/operators';
 import { UohStore } from '@haifauniversity/ngx-tools';
 
 import { UohPayment, UohPayStatus, UohPayConfig, UOH_PAY_CONFIG } from '../models';
@@ -91,9 +91,10 @@ export class UohPay {
    */
   private checkAttempt(token: string, attempt: number): Observable<UohPayment> {
     if (attempt < this.config.maxAttempts) {
-      return this.get(token);
+      // Return pending on error so it will retry on the next attempt.
+      return this.get(token).pipe(catchError((_) => of({ status: UohPayStatus.Pending })));
     } else {
-      throw Error(`The maximum attempts (${this.config.maxAttempts}) to retrieve the payment was reached`);
+      throw new Error(`The maximum attempts (${this.config.maxAttempts}) to retrieve the payment was reached`);
     }
   }
 }
