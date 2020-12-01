@@ -63,7 +63,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Log the sanitized url for the terminal page.
     const url = this.sanitizedUrl ? this.sanitizedUrl.toString() : undefined;
-    this.logger.info('Payment initialized for url', url, 'for token', this.token);
+    this.logger.info('[UohPayPageComponent.ngOnInit] - Payment initialized for url', url, 'for token', this.token);
     // Check if the component can be deactivated when the guard emits a deactivation request.
     this.subscription.add(
       this.deactivate.request$
@@ -82,7 +82,12 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   @HostListener('window:beforeunload', ['$event'])
   shouldExit(event: BeforeUnloadEvent): boolean {
-    this.logger.log(UohLogLevel.DEBUG, false, 'Window before unload event occurred. Payment token:', this.token);
+    this.logger.log(
+      UohLogLevel.DEBUG,
+      false,
+      '[UohPayPageComponent.shouldExit] Window before unload event occurred. Payment token:',
+      this.token
+    );
 
     // Ask the user if he/she really wants to unload this application.
     event.preventDefault();
@@ -97,32 +102,28 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   @HostListener('window:message', ['$event'])
   handleMessage(event: MessageEvent): void {
-    this.logger.debug('Handle message event:', JSON.stringify(event));
+    try {
+      this.logger.debug('[UohPayPageComponent.handleMessage] Handle message event:', JSON.stringify(event));
 
-    // Check if the message event from the iframe is from a valid origin (the payment service).
-    if (this.pay.isMessageValid(event)) {
-      // If the message returns the status of failure navigate to the corresponding route.
-      if (this.pay.getStatus(event) === UohPayStatus.Failure) {
-        this.logger.debug('The MessageEvent from the iframe returned status = "failure"');
-        this.paid.emit(false);
-      } else {
-        // Else, wait until the payment service returns a completion status (either success or failure).
-        // Then, navigate to the corresponding route.
-        this.subscription.add(
-          this.pay
-            .onComplete(this.token)
-            .pipe(
-              tap((payment) => this.logger.info('On complete payment', JSON.stringify(payment))),
-              map((payment) => payment.status === UohPayStatus.Success),
-              catchError((error) => {
-                this.logger.error('On complete payment error:', JSON.stringify(error));
-
-                return of(false);
-              })
-            )
-            .subscribe((success) => this.paid.emit(success))
-        );
+      // Check if the message event from the iframe is from a valid origin (the payment service).
+      if (this.pay.isMessageValid(event)) {
+        // If the message returns the status of failure navigate to the corresponding route.
+        if (this.pay.getStatus(event) === UohPayStatus.Failure) {
+          this.logger.debug(
+            '[UohPayPageComponent.handleMessage] The MessageEvent from the iframe returned status = "failure"'
+          );
+          this.paid.emit(false);
+        } else {
+          // Else, wait until the payment service returns a completion status (either success or failure).
+          // Then, navigate to the corresponding route.
+          this.logger.debug(
+            '[UohPayPageComponent.handleMessage] The MessageEvent from the iframe returned status = "success" or "pending"'
+          );
+          this.subscription.add(this.onComplete().subscribe((success) => this.paid.emit(success)));
+        }
       }
+    } catch (e) {
+      this.logger.error();
     }
   }
 
@@ -132,7 +133,8 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
   private canDeactivate(): Observable<boolean> {
     // If the status of the payment is still pending ask the user if he/she wants to navigate out.
     if (this.pay.payment.status === UohPayStatus.Pending) {
-      this.logger.debug('Deactivating pending payment with token:', this.token);
+      this.logger.debug('[UohPayPageComponent.canDeactivate] Deactivating pending payment with token:', this.token);
+
       return this.confirm();
     }
 
@@ -144,19 +146,24 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    * Displays a confirmation dialog when the user tries to leave this route.
    */
   private confirm(): Observable<boolean> {
-    return (
-      this.dialog
-        // TODO: Retrieve the direction from the language settings.
-        .open(UohPayDialogComponent, { direction: 'rtl' })
-        .afterClosed()
-        .pipe(
-          // Coerce to boolean - convert undefined response to false.
-          map((deactivate) => !!deactivate),
-          tap((deactivate) => this.logger.debug(`Deactivation: ${deactivate}`)),
-          // If the payment was received autorize the deactivation and emit the result using the paid event emitter.
-          switchMap((deactivate) => this.checkPayment().pipe(map((_) => deactivate)))
-        )
-    );
+    try {
+      return (
+        this.dialog
+          // TODO: Retrieve the direction from the language settings.
+          .open(UohPayDialogComponent, { direction: 'rtl' })
+          .afterClosed()
+          .pipe(
+            // Coerce to boolean - convert undefined response to false.
+            map((deactivate) => !!deactivate),
+            tap((deactivate) => this.logger.debug(`[UohPayPageComponent.confirm] Deactivation: ${deactivate}`)),
+            // If the payment was received autorize the deactivation and emit the result using the paid event emitter.
+            switchMap((deactivate) => this.checkPayment().pipe(map((_) => deactivate)))
+          )
+      );
+    } catch (e) {
+      const message = !!e && !!e.message ? e.message : 'No message';
+      this.logger.error('[UohPayPageComponent.confirm] Confirm error:', message);
+    }
   }
 
   /**
@@ -164,20 +171,39 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    * If so, it emits the result using the paid event emitter.
    */
   private checkPayment(): Observable<UohPayment> {
-    this.logger.debug('Check payment for token:', this.token);
+    this.logger.debug('[UohPayPageComponent.checkPayment] Check payment for token:', this.token);
 
     return this.pay.get(this.token).pipe(
       catchError((error) => {
-        this.logger.error('Check payment error:', JSON.stringify(error));
+        this.logger.error('[UohPayPageComponent.checkPayment] Check payment error:', JSON.stringify(error));
 
         return of({ status: UohPayStatus.Pending });
       }),
       tap((payment) => {
-        this.logger.info('Check payment:', JSON.stringify(payment));
+        this.logger.info('[UohPayPageComponent.checkPayment] Check payment:', JSON.stringify(payment));
         if (!!payment && payment.status !== UohPayStatus.Pending) {
           const success = payment.status === UohPayStatus.Success;
           this.paid.emit(success);
         }
+      })
+    );
+  }
+
+  /**
+   * Fires when the payment is complete (checking with the stored token).
+   * It returns true if the payment is successful, false otherwise.
+   */
+  private onComplete(): Observable<boolean> {
+    return this.pay.onComplete(this.token).pipe(
+      tap((payment) =>
+        this.logger.info('[UohPayPageComponent.onComplete] On complete payment', JSON.stringify(payment))
+      ),
+      map((payment) => payment.status === UohPayStatus.Success),
+      catchError((error) => {
+        const message = !!error && !!error.message ? error.message : 'No message';
+        this.logger.error('[UohPayPageComponent.onComplete] On complete payment error:', message);
+
+        return of(false);
       })
     );
   }
