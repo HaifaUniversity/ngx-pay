@@ -103,6 +103,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     if (this.pay.isMessageValid(event)) {
       // If the message returns the status of failure navigate to the corresponding route.
       if (this.pay.getStatus(event) === UohPayStatus.Failure) {
+        this.logger.debug('The MessageEvent from the iframe returned status = "failure"');
         this.paid.emit(false);
       } else {
         // Else, wait until the payment service returns a completion status (either success or failure).

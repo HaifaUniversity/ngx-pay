@@ -57,14 +57,20 @@ export class UohPay {
    * @param token The payment token.
    */
   onComplete(token: string): Observable<UohPayment> {
-    /**
-     * Tries to retrieve the payment details with each interval until the confirmation is no longer pending.
-     * The interval is limitted by a maximum number of attemps.
-     */
-    return interval(this.config.interval).pipe(
-      switchMap((attempt) => this.checkAttempt(token, attempt)),
-      first((payment) => !!payment && payment.status !== UohPayStatus.Pending)
-    );
+    try {
+      /**
+       * Tries to retrieve the payment details with each interval until the confirmation is no longer pending.
+       * The interval is limitted by a maximum number of attemps.
+       */
+      return interval(this.config.interval).pipe(
+        switchMap((attempt) => this.checkAttempt(token, attempt)),
+        first((payment) => !!payment && payment.status !== UohPayStatus.Pending)
+      );
+    } catch (e) {
+      const message = !!e && !!e.message ? e.message : 'No message';
+
+      throw new Error(`UohPay onComplete error: ${message}`);
+    }
   }
 
   /**
@@ -72,9 +78,15 @@ export class UohPay {
    * @param token The payment token.
    */
   get(token: string): Observable<UohPayment> {
-    const url = `${this.config.api}/status/${token}`;
+    try {
+      const url = `${this.config.api}/status/${token}`;
 
-    return this.http.get<UohPayment>(url).pipe(tap((payment) => this.store.setState(payment)));
+      return this.http.get<UohPayment>(url).pipe(tap((payment) => this.store.setState(payment)));
+    } catch (e) {
+      const message = !!e && !!e.message ? e.message : 'No message';
+
+      throw new Error(`UohPay get error: ${message}`);
+    }
   }
 
   /**
