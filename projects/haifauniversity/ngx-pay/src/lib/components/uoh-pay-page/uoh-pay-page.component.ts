@@ -24,9 +24,13 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   sanitizedUrl: SafeResourceUrl;
   /**
-   * True to show a loading message, false to show the payment iframe.
+   * True to show a loading message.
    */
   loading$ = new BehaviorSubject<boolean>(false);
+  /**
+   * The visibility of the payment iframe.
+   */
+  visibility$ = this.loading$.asObservable().pipe(map((loading) => (loading ? 'hidden' : 'visible')));
   /**
    * True if the interval for checking the payment with the api reached timeout.
    */

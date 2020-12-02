@@ -8,5 +8,5 @@
   [attr.width]="width"
   [attr.height]="height"
   [attr.frameborder]="border"
-  [style.visibility]="(loading$ | async) ? 'visible' : 'hidden'"
+  [style.visibility]="visibility$ | async"
 ></iframe>
