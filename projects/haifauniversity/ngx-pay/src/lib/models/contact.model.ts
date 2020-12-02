@@ -4,7 +4,7 @@ export interface UohPayContact {
    */
   email: string;
   /**
-   * The name of the application for the error message.
+   * The subject for the error message.
    */
-  application: string;
+  subject: string;
 }

@@ -20,7 +20,7 @@
   <div *ngIf="contact" class="uoh-pay-failure">
     <uoh-pay-failure-contact
       [email]="contact.email"
-      [subject]="contact.application + ' - קוד שגיאה: ' + token"
+      [subject]="contact.subject + ' - קוד שגיאה: ' + token"
       [body]="'לא ניתן לשלוף את פרטי התשלום. קוד שגיאה: ' + token + '.'"
       >דיווח על תקלה</uoh-pay-failure-contact
     >
