@@ -60,6 +60,7 @@ export class UohPay {
 
   /**
    * Sets an interval that fires when the payment was received in the server (either success or failure).
+   * If the interval reached the maximum number of trials it throws an error.
    * @param token The payment token.
    */
   onComplete(token: string): Observable<UohPayment> {

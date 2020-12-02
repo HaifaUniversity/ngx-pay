@@ -28,6 +28,10 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   loading$ = new BehaviorSubject<boolean>(false);
   /**
+   * True if the interval for checking the payment with the api reached timeout.
+   */
+  private timeout = false;
+  /**
    * The width for the iframe.
    */
   @Input() width = '100%';
@@ -138,7 +142,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   private canDeactivate(): Observable<boolean> {
     // If the status of the payment is still pending ask the user if he/she wants to navigate out.
-    if (this.pay.payment.status === UohPayStatus.Pending) {
+    if (this.pay.payment.status === UohPayStatus.Pending || !this.timeout) {
       this.logger.debug('[UohPayPageComponent.canDeactivate] Deactivating pending payment with token:', this.token);
 
       return this.confirm();
@@ -177,6 +181,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    * If so, it emits the result using the paid event emitter.
    */
   private checkPayment(): Observable<UohPayment> {
+    this.loading$.next(true);
     this.logger.debug('[UohPayPageComponent.checkPayment] Check payment for token:', this.token);
 
     return this.pay.get(this.token).pipe(
@@ -201,6 +206,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
       ),
       map((payment) => payment.status === UohPayStatus.Success),
       catchError((error) => {
+        this.timeout = true;
         const message = !!error && !!error.message ? error.message : 'No message';
         this.logger.error('[UohPayPageComponent.onComplete] On complete payment error:', message);
 
