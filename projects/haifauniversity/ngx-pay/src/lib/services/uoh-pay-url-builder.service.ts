@@ -76,7 +76,8 @@ export class UohPayUrlBuilder {
       .set('u71', '1')
       .set('trButtonColor', theme.button)
       .set('trBgColor', theme.background)
-      .set('trTextColor', theme.text);
+      .set('trTextColor', theme.text)
+      .set('theme', theme.name);
 
     return result;
   }
