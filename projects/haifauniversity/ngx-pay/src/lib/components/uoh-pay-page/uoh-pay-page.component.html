@@ -1,6 +1,12 @@
+<ng-container *ngIf="loading$ | async">
+  <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
+  <div class="uoh-pay-page-loading">נא להמתין עד לקבלת מסך האישור.</div>
+  <div class="uoh-pay-page-loading">אין לסגור את החלון זה.</div>
+</ng-container>
 <iframe
   [src]="sanitizedUrl"
   [attr.width]="width"
   [attr.height]="height"
   [attr.frameborder]="border"
+  [style.visibility]="(loading$ | async) ? 'visible' : 'hidden'"
 ></iframe>

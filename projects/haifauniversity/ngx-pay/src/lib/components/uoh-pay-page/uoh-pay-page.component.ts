@@ -2,7 +2,7 @@ import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, O
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UohLogger, UohLogLevel } from '@haifauniversity/ngx-tools';
-import { Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { UohPayment } from '../../models/payment.model';
 import { UohPayStatus } from '../../models/status.model';
@@ -23,6 +23,10 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    * The sanitized url for the terminal page.
    */
   sanitizedUrl: SafeResourceUrl;
+  /**
+   * True to show a loading message, false to show the payment iframe.
+   */
+  loading$ = new BehaviorSubject<boolean>(false);
   /**
    * The width for the iframe.
    */
@@ -114,6 +118,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
           );
           this.paid.emit(false);
         } else {
+          this.loading$.next(true);
           // Else, wait until the payment service returns a completion status (either success or failure).
           // Then, navigate to the corresponding route.
           this.logger.debug(
