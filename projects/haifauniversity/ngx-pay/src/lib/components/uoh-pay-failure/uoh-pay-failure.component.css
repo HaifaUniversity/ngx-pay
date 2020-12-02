@@ -1,4 +1,7 @@
 .uoh-error {
   font-weight: bold;
+}
+
+.uoh-pay-failure {
   margin: 16px 0;
 }

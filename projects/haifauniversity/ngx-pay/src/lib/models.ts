@@ -9,3 +9,4 @@ export * from './models/status.model';
 export * from './models/theme.model';
 export * from './models/type.model';
 export * from './models/installments.model';
+export * from './models/contact.model';
