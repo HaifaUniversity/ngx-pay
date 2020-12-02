@@ -1,5 +1,5 @@
 import { HttpBackend } from '@angular/common/http';
-import { UohEnvironment } from '@haifauniversity/ngx-tools';
+import { UohEnvironment, UohLogger } from '@haifauniversity/ngx-tools';
 import { UohPayConfig, UohPayOptions, UohPayApi } from '../models/config.model';
 import { UohPay } from '../services/uoh-pay.service';
 import { UOH_PAY_DEFAULT_OPTIONS, UOH_TERMINAL_PLACEHOLDER } from './defaults';
@@ -85,8 +85,9 @@ export function resolvePaymentConfig(environment: UohEnvironment, options: UohPa
 /**
  * A provider factory that returns the PaymentService instance.
  * @param httpBackend The Angular HttpBackend service.
+ * @param logger The UOH logger to log the details.
  * @param config The configuration for the payment service.
  */
-export function resolvePaymentService(httpBackend: HttpBackend, config: UohPayConfig): UohPay {
-  return new UohPay(httpBackend, config);
+export function resolvePaymentService(httpBackend: HttpBackend, logger: UohLogger, config: UohPayConfig): UohPay {
+  return new UohPay(httpBackend, logger, config);
 }

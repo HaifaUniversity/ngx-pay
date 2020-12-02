@@ -123,7 +123,8 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
         }
       }
     } catch (e) {
-      this.logger.error();
+      const message = !!e && !!e.message ? e.message : 'No message';
+      this.logger.error('[UohPayPageComponent.handleMessage] Error:', message);
     }
   }
 
@@ -174,11 +175,6 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     this.logger.debug('[UohPayPageComponent.checkPayment] Check payment for token:', this.token);
 
     return this.pay.get(this.token).pipe(
-      catchError((error) => {
-        this.logger.error('[UohPayPageComponent.checkPayment] Check payment error:', JSON.stringify(error));
-
-        return of({ status: UohPayStatus.Pending });
-      }),
       tap((payment) => {
         this.logger.info('[UohPayPageComponent.checkPayment] Check payment:', JSON.stringify(payment));
         if (!!payment && payment.status !== UohPayStatus.Pending) {
