@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { HttpClient, HttpBackend, HttpErrorResponse } from '@angular/common/http';
 import { Observable, interval, of } from 'rxjs';
-import { switchMap, first, tap, catchError } from 'rxjs/operators';
+import { switchMap, first, tap, catchError, map } from 'rxjs/operators';
 import { UohLogger, UohStore } from '@haifauniversity/ngx-tools';
 
 import { UohPayment, UohPayStatus, UohPayConfig, UOH_PAY_CONFIG } from '../models';
@@ -82,22 +82,13 @@ export class UohPay {
 
   /**
    * Retrieves the payment details associated with the token.
-   * This method handles HTTP errors internally and logs them.
    * @param token The payment token.
    */
   get(token: string): Observable<UohPayment> {
     try {
       const url = `${this.config.api}/status/${token}`;
 
-      return this.http.get<UohPayment>(url).pipe(
-        catchError((error) => {
-          const message = this.getErrorMessage(error);
-          this.logger.error('[UohPay.get] For token:', token, 'error message:', message);
-
-          return of({ status: UohPayStatus.Pending });
-        }),
-        tap((payment) => this.store.setState(payment))
-      );
+      return this.http.get<UohPayment>(url).pipe(tap((payment) => this.store.setState(payment)));
     } catch (e) {
       const message = this.getErrorMessage(e);
 
@@ -114,6 +105,7 @@ export class UohPay {
 
   /**
    * Tries to check if the payment was received, but if the maximum number of attempts was reached it throws an error.
+   * This method handles HTTP errors internally and logs them.
    * @param token The payment token.
    * @param attempt The attempt number.
    */
@@ -122,6 +114,12 @@ export class UohPay {
       this.logger.debug(`[UohPay.checkAttempt] For token:', ${token}, attempt no.: ${attempt}`);
       // Return pending on error so it will retry on the next attempt.
       return this.get(token).pipe(
+        catchError((error) => {
+          const message = this.getErrorMessage(error);
+          this.logger.error('[UohPay.get] For token:', token, 'error message:', message);
+
+          return of({ status: UohPayStatus.Pending });
+        }),
         tap((payment) =>
           this.logger.debug(
             `[UohPay.checkAttempt] For token: ${token}, attempt no.: ${attempt}, status: ${payment.status}`

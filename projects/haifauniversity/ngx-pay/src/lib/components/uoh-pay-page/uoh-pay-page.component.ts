@@ -6,6 +6,7 @@ import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { UohPayment } from '../../models/payment.model';
 import { UohPayStatus } from '../../models/status.model';
+import { UohPayConnectivity } from '../../services/uoh-pay-connectivity.service';
 import { UohPayDeactivate } from '../../services/uoh-pay-deactivate.service';
 import { UohPay } from '../../services/uoh-pay.service';
 import { UohPayDialogComponent } from '../uoh-pay-dialog/uoh-pay-dialog.component';
@@ -17,6 +18,7 @@ import { UohPayDialogComponent } from '../uoh-pay-dialog/uoh-pay-dialog.componen
   selector: 'uoh-pay-page',
   templateUrl: './uoh-pay-page.component.html',
   styleUrls: ['./uoh-pay-page.component.css'],
+  providers: [UohPayConnectivity],
 })
 export class UohPayPageComponent implements OnInit, OnDestroy {
   /**
@@ -61,6 +63,10 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    * Fires true if the payment was successful, false otherwise.
    */
   @Output() paid = new EventEmitter<boolean>();
+  /**
+   * Fires true if the payment service can be reached, false otherwise.
+   */
+  @Output() ping = new EventEmitter<boolean>();
   @HostBinding('class') class = 'uoh-pay-page';
   private subscription = new Subscription();
 
@@ -69,10 +75,19 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private logger: UohLogger,
     private pay: UohPay,
-    private deactivate: UohPayDeactivate
+    private deactivate: UohPayDeactivate,
+    private connectivity: UohPayConnectivity
   ) {}
 
   ngOnInit(): void {
+    // Make sure that the service is available.
+    this.loading$.next(true);
+    this.subscription.add(
+      this.connectivity
+        .check(this.token)
+        .pipe(tap((_) => this.loading$.next(false)))
+        .subscribe((success) => this.ping.emit(success))
+    );
     // Log the sanitized url for the terminal page.
     const url = this.sanitizedUrl ? this.sanitizedUrl.toString() : undefined;
     this.logger.info('[UohPayPageComponent.ngOnInit] - Payment initialized for url', url, 'for token', this.token);
@@ -189,6 +204,11 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     this.logger.debug('[UohPayPageComponent.checkPayment] Check payment for token:', this.token);
 
     return this.pay.get(this.token).pipe(
+      catchError((error) => {
+        this.logger.error('[UohPayPageComponent.checkPayment] For token:', this.token, 'error message:', error);
+
+        return of({ status: UohPayStatus.Pending });
+      }),
       tap((payment) => {
         this.logger.info('[UohPayPageComponent.checkPayment] Check payment:', JSON.stringify(payment));
         if (!!payment && payment.status !== UohPayStatus.Pending) {
