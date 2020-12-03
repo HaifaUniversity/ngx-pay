@@ -3,6 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { UohLogger } from '@haifauniversity/ngx-tools';
 import { BehaviorSubject, Observable, of, Subscription, timer } from 'rxjs';
 import { catchError, distinctUntilChanged, takeUntil, map, filter } from 'rxjs/operators';
+import { UohPaySlowConnectionDialogComponent } from '../components/uoh-pay-dialog/uoh-pay-slow-connection-dialog/uoh-pay-slow-connection-dialog.component';
+import { UohPayUnreachableDialogComponent } from '../components/uoh-pay-dialog/uoh-pay-unreachable-dialog/uoh-pay-unreachable-dialog.component';
 import { UohPay } from './uoh-pay.service';
 
 @Injectable()
@@ -24,7 +26,7 @@ export class UohPayConnectivity implements OnDestroy {
     this.subscription.add(
       timer(10000)
         .pipe(takeUntil(ping$))
-        .subscribe((_) => this.dialog.open(undefined, { disableClose: false }))
+        .subscribe((_) => this.dialog.open(UohPaySlowConnectionDialogComponent, { disableClose: false }))
     );
     this.subscription.add(ping$.subscribe((status) => this.handleStatus(token, status)));
 
@@ -42,7 +44,7 @@ export class UohPayConnectivity implements OnDestroy {
       // show retry message
       this.subscription.add(
         this.dialog
-          .open(undefined, { disableClose: false })
+          .open(UohPayUnreachableDialogComponent, { disableClose: false })
           .afterClosed()
           .subscribe((retry) => {
             if (retry) {

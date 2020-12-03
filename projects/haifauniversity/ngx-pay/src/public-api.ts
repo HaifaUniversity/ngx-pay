@@ -3,15 +3,9 @@
  */
 
 export * from './lib/models';
-export * from './lib/services/uoh-pay.service';
-export * from './lib/services/uoh-pay-url-builder.service';
 export * from './lib/uoh-pay.module';
 export * from './lib/guards/uoh-pay-deactivate.guard';
-// TODO: Move each component and module to its own export file.
-export * from './lib/components/uoh-pay-dialog/public-api';
-export * from './lib/components/uoh-pay-page/uoh-pay-page.component';
-export * from './lib/components/uoh-pay-page/uoh-pay-page.module';
-export * from './lib/components/uoh-pay-success/uoh-pay-success.component';
-export * from './lib/components/uoh-pay-success/uoh-pay-success.module';
-export * from './lib/components/uoh-pay-failure/uoh-pay-failure.component';
-export * from './lib/components/uoh-pay-failure/uoh-pay-failure.module';
+export * from './lib/services/public-api';
+export * from './lib/components/uoh-pay-page/public-api';
+export * from './lib/components/uoh-pay-success/public-api';
+export * from './lib/components/uoh-pay-failure/public-api';
