@@ -9,7 +9,7 @@ import { UohPayStatus } from '../../models/status.model';
 import { UohPayConnectivity } from '../../services/uoh-pay-connectivity.service';
 import { UohPayDeactivate } from '../../services/uoh-pay-deactivate.service';
 import { UohPay } from '../../services/uoh-pay.service';
-import { UohPayDialogComponent } from '../uoh-pay-dialog/uoh-pay-dialog.component';
+import { UohPayCloseDialogComponent } from '../uoh-pay-dialog/uoh-pay-close-dialog/uoh-pay-close-dialog.component';
 
 /**
  * Displays a terminal payment page in an iframe and handles the payment success or failure.
@@ -179,7 +179,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
       return (
         this.dialog
           // TODO: Retrieve the direction from the language settings.
-          .open(UohPayDialogComponent, { direction: 'rtl' })
+          .open(UohPayCloseDialogComponent, { direction: 'rtl' })
           .afterClosed()
           .pipe(
             // Coerce to boolean - convert undefined response to false.
