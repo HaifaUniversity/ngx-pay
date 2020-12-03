@@ -1,4 +1,5 @@
-import { Component, HostBinding, Input } from '@angular/core';
+import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import { UohLogger } from '@haifauniversity/ngx-tools';
 import { UohPayContact } from '../../models/contact.model';
 import { UohPayment } from '../../models/payment.model';
 import { UohPayStatus } from '../../models/status.model';
@@ -8,7 +9,7 @@ import { UohPayStatus } from '../../models/status.model';
   templateUrl: './uoh-pay-failure.component.html',
   styleUrls: ['./uoh-pay-failure.component.css'],
 })
-export class UohPayFailureComponent {
+export class UohPayFailureComponent implements OnInit {
   mailto: string;
   status = UohPayStatus;
   /**
@@ -25,5 +26,11 @@ export class UohPayFailureComponent {
   @Input() contact: UohPayContact;
   @HostBinding('class') class = 'uoh-pay-failure';
 
-  constructor() {}
+  constructor(private logger: UohLogger) {}
+
+  ngOnInit(): void {
+    this.logger.error(
+      `[UohPayFailureComponent.ngOnInit] Payment failed for token ${this.token} with status ${this.payment.status}.`
+    );
+  }
 }
