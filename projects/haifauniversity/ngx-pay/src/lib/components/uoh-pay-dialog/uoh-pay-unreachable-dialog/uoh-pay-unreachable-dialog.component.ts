@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+export interface UohPayUnreachableDialogData {
+  token: string;
+}
 
 @Component({
   selector: 'uoh-pay-unreachable-dialog',
@@ -6,7 +11,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./uoh-pay-unreachable-dialog.component.css'],
 })
 export class UohPayUnreachableDialogComponent implements OnInit {
-  constructor() {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: UohPayUnreachableDialogData) {}
 
   ngOnInit(): void {}
 }
