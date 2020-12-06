@@ -9,7 +9,7 @@
     "@angular/core": "^10.0.0",
     "@angular/material": "^10.0.0",
     "@uoh/ngx-theme": "^10.0.0",
-    "@haifauniversity/ngx-tools": "^0.0.2"
+    "@haifauniversity/ngx-tools": "^0.0.4"
   },
   "dependencies": {
     "tslib": "^2.0.0"
