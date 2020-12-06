@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UohLogger, UohLogLevel } from '@haifauniversity/ngx-tools';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
 import { UohPayment } from '../../models/payment.model';
 import { UohPayStatus } from '../../models/status.model';
 import { UohPayConnectivity } from '../../services/uoh-pay-connectivity.service';
@@ -85,8 +85,14 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.connectivity
         .check(this.token)
-        .pipe(tap((_) => this.loading$.next(false)))
-        .subscribe((success) => this.ping.emit(success))
+        .pipe(
+          tap((_) => this.loading$.next(false)),
+          // Emit the result of the availability check to the parent component.
+          tap((success) => this.ping.emit(success)),
+          // If the service is not available behave as in the case that the payment failed.
+          filter((success) => !success)
+        )
+        .subscribe((_) => this.paid.emit(false))
     );
     // Log the sanitized url for the terminal page.
     const url = this.sanitizedUrl ? this.sanitizedUrl.toString() : undefined;
