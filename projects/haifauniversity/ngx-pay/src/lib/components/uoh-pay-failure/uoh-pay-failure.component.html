@@ -9,20 +9,18 @@
 
 <ng-template #pendingTemplate>
   <div class="uoh-error uoh-pay-failure">
-    לא ניתן לשלוף את פרטי התשלום.<br />
-    נא לפנות אל מוקד התמיכה.<br />
-    קוד השגיאה:
-    <span>
-      {{ token }}
-    </span>
-  </div>
-
-  <div *ngIf="contact" class="uoh-pay-failure">
-    <uoh-pay-failure-contact
-      [email]="contact.email"
-      [subject]="contact.subject + ' - קוד שגיאה: ' + token"
-      [body]="'לא ניתן לשלוף את פרטי התשלום. קוד שגיאה: ' + token + '.'"
-      >דיווח על תקלה</uoh-pay-failure-contact
-    >
+    <div>לא ניתן לשלוף את פרטי התשלום.</div>
+    <div>
+      נא לפנות אל <a [href]="contact.website" target="_blank">{{ contact.name }}</a
+      >.
+    </div>
+    <div *ngIf="token">
+      קוד השגיאה: <span>{{ token }}.</span>
+      <uoh-pay-failure-contact
+        [email]="contact.email"
+        [subject]="'שגיאה בשליפת פרטי תשלום - קוד שגיאה: ' + token"
+        [body]="'לא ניתן לשלוף את פרטי התשלום - קוד שגיאה: ' + token"
+      ></uoh-pay-failure-contact>
+    </div>
   </div>
 </ng-template>

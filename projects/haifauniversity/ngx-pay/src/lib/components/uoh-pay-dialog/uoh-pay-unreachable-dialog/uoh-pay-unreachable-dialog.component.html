@@ -6,8 +6,16 @@
   <div>לא ניתן ליצור קשר מול שירות התשלומים.</div>
   <div *ngIf="data && data.token">
     קוד השגיאה: <span>{{ data.token }}.</span>
+    <uoh-pay-failure-contact
+      [email]="contact.email"
+      [subject]="'שירות התשלומים לא פעיל - קוד שגיאה: ' + data.token"
+      [body]="'לא ניתן ליצור קשר עם שירות התשלומים - קוד שגיאה: ' + data.token"
+    ></uoh-pay-failure-contact>
   </div>
-  <div>אם הבעיה נמשכת נא לפנות אל <a href="https://stud-hc.haifa.ac.il/he/" target="_blank">מרכז שירות ותמיכה</a>.</div>
+  <div>
+    אם הבעיה נמשכת נא לפנות אל <a [href]="contact.website" target="_blank">{{ contact.name }}</a
+    >.
+  </div>
 </div>
 <div mat-dialog-actions>
   <button mat-raised-button color="primary" [mat-dialog-close]="true" cdkFocusInitial>לנסות שוב</button>

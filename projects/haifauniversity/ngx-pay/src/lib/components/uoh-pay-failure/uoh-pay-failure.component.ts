@@ -1,6 +1,6 @@
-import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import { Component, HostBinding, Inject, Input, OnInit } from '@angular/core';
 import { UohLogger } from '@haifauniversity/ngx-tools';
-import { UohPayContact } from '../../models/contact.model';
+import { UohPayContact, UOH_PAY_CONTACT } from '../../models/contact.model';
 import { UohPayment } from '../../models/payment.model';
 import { UohPayStatus } from '../../models/status.model';
 
@@ -20,13 +20,9 @@ export class UohPayFailureComponent implements OnInit {
    * The payment token.
    */
   @Input() token: string;
-  /**
-   * [Optional] A contact to which the user can send error messages.
-   */
-  @Input() contact: UohPayContact;
   @HostBinding('class') class = 'uoh-pay-failure';
 
-  constructor(private logger: UohLogger) {}
+  constructor(private logger: UohLogger, @Inject(UOH_PAY_CONTACT) public contact: UohPayContact) {}
 
   ngOnInit(): void {
     this.logger.error(
