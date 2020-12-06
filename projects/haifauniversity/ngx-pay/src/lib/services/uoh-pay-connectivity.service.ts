@@ -62,7 +62,7 @@ export class UohPayConnectivity implements OnDestroy {
       // show retry message
       this.subscription.add(
         this.dialog
-          .open(UohPayUnreachableDialogComponent, { disableClose: false, data: { token } })
+          .open(UohPayUnreachableDialogComponent, { disableClose: false })
           .afterClosed()
           .subscribe((retry) => {
             if (retry) {
