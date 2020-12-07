@@ -14,7 +14,7 @@ export const UOH_PAY_DEFAULT_OPTIONS: UohPayOptions = {
   api: UOH_PAY_DEFAULT_API,
   interval: 500,
   maxAttempts: 30,
-  url: `https://direct.tranzila.com/${UOH_TERMINAL_PLACEHOLDER}/iframenew.php?`,
+  url: `https://direct.tranzila.com/${UOH_TERMINAL_PLACEHOLDER}/iframenew.php`,
 };
 
 export const UOH_PAY_DEFAULT_CONTACT: UohPayContact = {

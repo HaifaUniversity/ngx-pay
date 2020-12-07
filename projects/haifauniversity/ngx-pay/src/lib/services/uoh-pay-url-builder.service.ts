@@ -39,7 +39,7 @@ export class UohPayUrlBuilder {
       mappedParams = mappedParams.set(key, value);
     }
 
-    return `${url}?${mappedParams}`;
+    return this.endsWithQuestionMark(url) ? `${url}${mappedParams}` : `${url}?${mappedParams}`;
   }
 
   /**
@@ -121,5 +121,15 @@ export class UohPayUrlBuilder {
     } catch (e) {}
 
     return false;
+  }
+
+  /**
+   * Returns true if an url ends with a question mark, false otherwise.
+   * @param url The url.
+   */
+  private endsWithQuestionMark(url: string): boolean {
+    const lastChar = url.substring(url.length - 1, url.length);
+
+    return lastChar === '?';
   }
 }
