@@ -8,7 +8,6 @@ export interface UohPayConfig {
   origin: string;
   interval: number;
   maxAttempts: number;
-  local: boolean;
   url: string;
   placeholder: string;
 }
@@ -38,10 +37,6 @@ export interface UohPayOptions {
    * The maximum number of attempts to check with the api if the payment was received.
    */
   maxAttempts?: number;
-  /**
-   * If set to true, the payment service will send request to localhost (combine it with a proxy for local development).
-   */
-  local?: boolean;
   /**
    * The base url for the payment page (the iframe) - it should contain '{terminal}' as a placeholder for the terminal name.
    */

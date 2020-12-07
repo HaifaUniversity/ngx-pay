@@ -8,6 +8,7 @@ import { UohPayment } from '../../models/payment.model';
 import { UohPayStatus } from '../../models/status.model';
 import { UohPayConnectivity } from '../../services/uoh-pay-connectivity.service';
 import { UohPayDeactivate } from '../../services/uoh-pay-deactivate.service';
+import { UohPayMock } from '../../services/uoh-pay-mock.service';
 import { UohPay } from '../../services/uoh-pay.service';
 import { UohPayCloseDialogComponent } from '../uoh-pay-dialog/uoh-pay-close-dialog/uoh-pay-close-dialog.component';
 
@@ -103,6 +104,10 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
         .pipe(switchMap((_) => this.canDeactivate()))
         .subscribe((deactivate) => this.deactivate.sendResponse(deactivate))
     );
+    // Use the mock for local development.
+    if (this.pay instanceof UohPayMock) {
+      this.pay.mock();
+    }
   }
 
   ngOnDestroy(): void {
