@@ -35,7 +35,7 @@ export class UohPayConnectivity implements OnDestroy {
     this.subscription.add(
       timer(this.TIMEOUT)
         .pipe(
-          tap((_) => this.logger.debug(`[UohPayConnectivity.check] Slow connection timeout: ${this.TIMEOUT}`)),
+          tap((_) => this.logger.debug(`[UohPayConnectivity.check] Slow connection alert after ${this.TIMEOUT} ms`)),
           takeUntil(ping$)
         )
         .subscribe((_) => this.dialog.open(UohPaySlowConnectionDialogComponent, { disableClose: false }))
