@@ -172,7 +172,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   private canDeactivate(): Observable<boolean> {
     // If the status of the payment is still pending ask the user if he/she wants to navigate out.
-    if (this.pay.payment.status === UohPayStatus.Pending || !this.timeout) {
+    if (this.pay.payment.status === UohPayStatus.Pending && !this.timeout) {
       this.logger.debug('[UohPayPageComponent.canDeactivate] Deactivating pending payment with token:', this.token);
 
       return this.confirm();
