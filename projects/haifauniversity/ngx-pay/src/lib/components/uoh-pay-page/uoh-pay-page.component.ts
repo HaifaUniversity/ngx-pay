@@ -209,7 +209,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
             // Coerce to boolean - convert undefined response to false.
             map((deactivate) => !!deactivate),
             tap((deactivate) => this.logger.debug(`[UohPayPageComponent.confirm] Deactivation: ${deactivate}`)),
-            // If the payment was received autorize the deactivation and emit the result using the paid event emitter.
+            // If the payment was received authorize the deactivation and emit the result using the paid event emitter.
             switchMap((deactivate) => this.checkPayment().pipe(map((_) => deactivate)))
           )
       );
@@ -235,6 +235,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
           const success = payment.status === UohPayStatus.Success;
           this.paid.emit(success);
         }
+        this.loading$.next(false);
       })
     );
   }
