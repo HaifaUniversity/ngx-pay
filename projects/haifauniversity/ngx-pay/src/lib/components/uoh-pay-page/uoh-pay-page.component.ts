@@ -27,6 +27,10 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   sanitizedUrl: SafeResourceUrl;
   /**
+   * Mock the payment postMessage - true for local development.
+   */
+  mock = false;
+  /**
    * True to show a loading message.
    */
   loading$ = new BehaviorSubject<boolean>(false);
@@ -34,10 +38,6 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    * The visibility of the payment iframe.
    */
   visibility$ = this.loading$.asObservable().pipe(map((loading) => (loading ? 'hidden' : 'visible')));
-  /**
-   * True if the interval for checking the payment with the api reached timeout.
-   */
-  private timeout = false;
   /**
    * The width for the iframe.
    */
@@ -69,6 +69,10 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   @Output() ping = new EventEmitter<boolean>();
   @HostBinding('class') class = 'uoh-pay-page';
+  /**
+   * True if the interval for checking the payment with the api reached timeout.
+   */
+  private timeout = false;
   private subscription = new Subscription();
 
   constructor(
@@ -105,13 +109,22 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
         .subscribe((deactivate) => this.deactivate.sendResponse(deactivate))
     );
     // Use the mock for local development.
-    if (this.pay instanceof UohPayMock) {
-      this.pay.mock();
-    }
+    this.mock = this.pay instanceof UohPayMock;
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+  }
+
+  /**
+   * Mock the postMessage mechanism for local development.
+   */
+  setMock(): void {
+    try {
+      (this.pay as UohPayMock).mock();
+    } catch (e) {
+      console.error('Cannot set the mock.');
+    }
   }
 
   /**

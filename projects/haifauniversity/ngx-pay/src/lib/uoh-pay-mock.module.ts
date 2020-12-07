@@ -19,8 +19,16 @@ export class UohPayMockModule {
     if (!!parentModule) {
       throw new Error('UohPayMockModule is already loaded. Import it in the AppModule only.');
     }
+    if (!document.URL.includes('localhost')) {
+      console.warn('The UohPayMockModule should be used for local development (localhost) only.');
+    }
   }
 
+  /**
+   * Configures a new UohPayMockModule using the given options.
+   * Use this module for local development only.
+   * @param options The options for the UohPay service.
+   */
   static forRoot(options = UOH_PAY_DEFAULT_OPTIONS): ModuleWithProviders<UohPayMockModule> {
     return {
       ngModule: UohPayMockModule,

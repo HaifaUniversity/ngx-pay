@@ -18,6 +18,10 @@ export class UohPayModule {
     }
   }
 
+  /**
+   * Configures a new UohPayModule using the given options.
+   * @param options The options for the UohPay service.
+   */
   static forRoot(options = UOH_PAY_DEFAULT_OPTIONS): ModuleWithProviders<UohPayModule> {
     return {
       ngModule: UohPayModule,
