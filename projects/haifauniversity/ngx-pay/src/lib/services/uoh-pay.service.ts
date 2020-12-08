@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import { HttpClient, HttpBackend, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpBackend, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, interval, of, throwError } from 'rxjs';
 import { switchMap, first, tap, catchError } from 'rxjs/operators';
 import { UohLogger, UohStore } from '@haifauniversity/ngx-tools';
@@ -13,6 +13,12 @@ import { UohPayment, UohPayStatus, UohPayConfig, UOH_PAY_CONFIG } from '../model
 export class UohPay {
   private store = new UohStore<UohPayment>({ status: UohPayStatus.Pending }, 'uoh-payment');
   private http: HttpClient;
+  // The following headers prevent browser caching (specially for IE11).
+  private readonly HEADERS = new HttpHeaders()
+    .set('Cache-Control', 'no-cache')
+    .set('Pragma', 'no-cache')
+    .set('Expires', 'Thu, 01 Jan 1970 00:00:00 GMT')
+    .set('If-Modified-Since', '0');
   payment$ = this.store.state$;
 
   get payment(): UohPayment {
@@ -89,15 +95,17 @@ export class UohPay {
     try {
       const url = `${this.config.api}/status/${token}`;
 
-      return this.http.get<UohPayment>(url).pipe(
-        catchError((error) => {
-          const message = this.getErrorMessage(error);
-          this.logger.error('[UohPay.get] For token:', token, 'error message:', message);
+      return this.http
+        .get<UohPayment>(url, { headers: this.HEADERS })
+        .pipe(
+          catchError((error) => {
+            const message = this.getErrorMessage(error);
+            this.logger.error('[UohPay.get] For token:', token, 'error message:', message);
 
-          return throwError(message);
-        }),
-        tap((payment) => this.store.setState(payment))
-      );
+            return throwError(message);
+          }),
+          tap((payment) => this.store.setState(payment))
+        );
     } catch (e) {
       const message = this.getErrorMessage(e);
 
