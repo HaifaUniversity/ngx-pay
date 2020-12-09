@@ -93,13 +93,16 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
         .pipe(
           tap((_) => this.loading$.next(false)),
           // This component can be deactivated if the connectivity check failed.
-          tap((success) => (this.requestConfirmation = success)),
+          tap((ping) => (this.requestConfirmation = ping.success)),
           // Emit the result of the availability check to the parent component.
-          tap((success) => this.ping.emit(success)),
+          tap((ping) => this.ping.emit(ping.success)),
           // If the service is not available behave as in the case that the payment failed.
-          filter((success) => !success)
+          // Continue also if the payment status is success or failure.
+          filter((ping) => !ping.success || (!!ping.status && ping.status !== UohPayStatus.Pending)),
+          // Set as paid if the ping returned success for the payment status.
+          map((ping) => ping.success && ping.status === UohPayStatus.Success)
         )
-        .subscribe((_) => this.paid.emit(false))
+        .subscribe((paid) => this.paid.emit(paid))
     );
     // Log the sanitized url for the terminal page.
     const url = this.sanitizedUrl ? this.sanitizedUrl.toString() : undefined;

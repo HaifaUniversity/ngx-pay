@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { HttpClient, HttpBackend, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, interval, of, throwError, timer } from 'rxjs';
-import { switchMap, first, tap, catchError, mergeMap, map, retryWhen } from 'rxjs/operators';
+import { Observable, throwError, timer } from 'rxjs';
+import { tap, catchError, mergeMap, map, retryWhen } from 'rxjs/operators';
 import { UohLogger, UohStore } from '@haifauniversity/ngx-tools';
 
 import { UohPayment, UohPayStatus, UohPayConfig, UOH_PAY_CONFIG } from '../models';
