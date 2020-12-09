@@ -30,7 +30,11 @@ export class UohPayConnectivity implements OnDestroy {
     this.logger.debug(`[UohPayConnectivity.check] Check connection for token ${token}`);
     const ping$ = this.pay.get(token).pipe(
       map((_) => true),
-      catchError((_) => of(false)),
+      catchError((error) => {
+        this.logger.error(`[UohPayConnectivity.check] Cannot check connectivity: ${error}`);
+
+        return of(false);
+      }),
       share()
     );
     this.subscription.add(
