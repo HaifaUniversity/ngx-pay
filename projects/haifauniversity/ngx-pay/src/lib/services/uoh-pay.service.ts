@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { HttpClient, HttpBackend, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, interval, of, throwError } from 'rxjs';
-import { switchMap, first, tap, catchError } from 'rxjs/operators';
+import { Observable, interval, of, throwError, timer } from 'rxjs';
+import { switchMap, first, tap, catchError, mergeMap, map, retryWhen } from 'rxjs/operators';
 import { UohLogger, UohStore } from '@haifauniversity/ngx-tools';
 
 import { UohPayment, UohPayStatus, UohPayConfig, UOH_PAY_CONFIG } from '../models';
@@ -75,20 +75,25 @@ export class UohPay {
        * Tries to retrieve the payment details with each interval until the confirmation is no longer pending.
        * The interval is limitted by a maximum number of attemps.
        */
-      return interval(this.config.interval).pipe(
-        switchMap((attempt) => this.checkAttempt(token, attempt)),
-        first((payment) => !!payment && payment.status !== UohPayStatus.Pending)
+      return this.get(token).pipe(
+        map((payment) => {
+          if (payment.status === UohPayStatus.Pending) {
+            throw UohPayStatus.Pending;
+          }
+
+          return payment;
+        }),
+        retryWhen((errors) => this.retryStrategy(errors, this.config.interval, this.config.maxAttempts))
       );
     } catch (e) {
       const message = this.getErrorMessage(e);
 
-      this.logger.error('[UohPay.onComplete] For token:', token, 'error message:', message);
+      throwError(`[UohPay.onComplete] For token: ${token} error message ${message}`);
     }
   }
 
   /**
    * Retrieves the payment details associated with the token.
-   * This method logs HTTP errors and rethrows them.
    * @param token The payment token.
    */
   get(token: string): Observable<UohPayment> {
@@ -101,18 +106,17 @@ export class UohPay {
       return this.http
         .get<UohPayment>(url, { headers: this.HEADERS })
         .pipe(
+          tap((payment) => this.store.setState(payment)),
           catchError((error) => {
             const message = this.getErrorMessage(error);
-            this.logger.error('[UohPay.get] For token:', token, 'error message:', message);
 
             return throwError(message);
-          }),
-          tap((payment) => this.store.setState(payment))
+          })
         );
     } catch (e) {
       const message = this.getErrorMessage(e);
 
-      this.logger.error('[UohPay.get] For token:', token, 'error message:', message);
+      throwError(`[UohPay.get] For token: ${token} error message: ${message}`);
     }
   }
 
@@ -124,31 +128,30 @@ export class UohPay {
   }
 
   /**
-   * Tries to check if the payment was received, but if the maximum number of attempts was reached it throws an error.
-   * @param token The payment token.
-   * @param attempt The attempt number.
+   * Generates a strategy to retry to reach the API.
+   * @param errors The errors from the retryWhen pipe.
+   * @param delay The number of milliseconds between retries.
+   * @param maxAttempts The maximum number of attempts.
    */
-  private checkAttempt(token: string, attempt: number): Observable<UohPayment> {
-    if (this.payment.status !== UohPayStatus.Pending) {
-      return of(this.payment);
-    }
+  private retryStrategy(errors: Observable<any>, delay: number, maxAttempts: number): Observable<any> {
+    return errors.pipe(
+      // Merge the errors to assign them a index and count them.
+      mergeMap((error, index) => {
+        const attempt = index + 1;
+        const lapse = delay + attempt;
 
-    if (attempt < this.config.maxAttempts) {
-      this.logger.debug(`[UohPay.checkAttempt] For token: ${token}, attempt no.: ${attempt}`);
-      // Return pending on error so it will retry on the next attempt.
-      return this.get(token).pipe(
-        catchError((_) => of({ status: UohPayStatus.Pending })),
-        tap((payment) =>
-          this.logger.debug(
-            `[UohPay.checkAttempt] For token: ${token}, attempt no.: ${attempt}, status: ${payment.status}`
-          )
-        )
-      );
-    } else {
-      throw new Error(
-        `[UohPay.checkAttempt] The maximum attempts (${this.config.maxAttempts}) to retrieve the payment for token ${token} was reached`
-      );
-    }
+        this.logger.error(`[UohPay.retryStrategy] Attempt ${attempt}: ${error} retry in ${lapse} ms`);
+
+        // Throw a final error after a number of unsuccessful retries.
+        if (attempt > maxAttempts) {
+          return throwError(
+            `[UohPay.retryStrategy] The maximum number of attempts (${maxAttempts}) was reached: ${error}`
+          );
+        }
+
+        return timer(lapse);
+      })
+    );
   }
 
   /**
