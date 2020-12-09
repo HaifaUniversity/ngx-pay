@@ -39,7 +39,8 @@ export class UohPayConnectivity implements OnDestroy {
           takeUntil(ping$)
         )
         .subscribe((_) =>
-          this.dialog.open(UohPaySlowConnectionDialogComponent, { direction: 'rtl', disableClose: false })
+          // TODO: Retrieve the direction from language settings.
+          this.dialog.open(UohPaySlowConnectionDialogComponent, { direction: 'rtl', disableClose: true })
         )
     );
     this.subscription.add(ping$.subscribe((status) => this.handleStatus(token, status)));
@@ -64,7 +65,8 @@ export class UohPayConnectivity implements OnDestroy {
       // show retry message
       this.subscription.add(
         this.dialog
-          .open(UohPayUnreachableDialogComponent, { direction: 'rtl', disableClose: false })
+          // TODO: Retrieve the direction from language settings.
+          .open(UohPayUnreachableDialogComponent, { direction: 'rtl', disableClose: true })
           .afterClosed()
           .subscribe((retry) => {
             if (retry) {

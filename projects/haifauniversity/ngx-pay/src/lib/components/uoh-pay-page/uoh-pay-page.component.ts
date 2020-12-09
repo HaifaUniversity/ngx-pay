@@ -203,7 +203,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
       return (
         this.dialog
           // TODO: Retrieve the direction from the language settings.
-          .open(UohPayCloseDialogComponent, { direction: 'rtl' })
+          .open(UohPayCloseDialogComponent, { direction: 'rtl', disableClose: true })
           .afterClosed()
           .pipe(
             // Coerce to boolean - convert undefined response to false.
