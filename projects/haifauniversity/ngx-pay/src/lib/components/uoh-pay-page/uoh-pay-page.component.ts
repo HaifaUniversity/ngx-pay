@@ -70,9 +70,9 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
   @Output() ping = new EventEmitter<boolean>();
   @HostBinding('class') class = 'uoh-pay-page';
   /**
-   * True if the interval for checking the payment with the api reached timeout.
+   * True if the user should be asked to confirm the component deactivation.
    */
-  private timeout = false;
+  private requestConfirmation = true;
   private subscription = new Subscription();
 
   constructor(
@@ -92,6 +92,8 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
         .check(this.token)
         .pipe(
           tap((_) => this.loading$.next(false)),
+          // This component can be deactivated if the connectivity check failed.
+          tap((success) => (this.requestConfirmation = success)),
           // Emit the result of the availability check to the parent component.
           tap((success) => this.ping.emit(success)),
           // If the service is not available behave as in the case that the payment failed.
@@ -185,7 +187,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   private canDeactivate(): Observable<boolean> {
     // If the status of the payment is still pending ask the user if he/she wants to navigate out.
-    if (this.pay.payment.status === UohPayStatus.Pending && !this.timeout) {
+    if (this.pay.payment.status === UohPayStatus.Pending && this.requestConfirmation) {
       this.logger.debug('[UohPayPageComponent.canDeactivate] Deactivating pending payment with token:', this.token);
 
       return this.confirm();
@@ -251,7 +253,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
       ),
       map((payment) => payment.status === UohPayStatus.Success),
       catchError((error) => {
-        this.timeout = true;
+        this.requestConfirmation = false;
         const message = !!error && !!error.message ? error.message : 'No message';
         this.logger.error('[UohPayPageComponent.onComplete] On complete payment error:', message);
 
