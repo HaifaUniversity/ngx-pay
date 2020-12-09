@@ -38,7 +38,9 @@ export class UohPayConnectivity implements OnDestroy {
           tap((_) => this.logger.debug(`[UohPayConnectivity.check] Slow connection alert after ${this.TIMEOUT} ms`)),
           takeUntil(ping$)
         )
-        .subscribe((_) => this.dialog.open(UohPaySlowConnectionDialogComponent, { disableClose: false }))
+        .subscribe((_) =>
+          this.dialog.open(UohPaySlowConnectionDialogComponent, { direction: 'rtl', disableClose: false })
+        )
     );
     this.subscription.add(ping$.subscribe((status) => this.handleStatus(token, status)));
 
@@ -62,7 +64,7 @@ export class UohPayConnectivity implements OnDestroy {
       // show retry message
       this.subscription.add(
         this.dialog
-          .open(UohPayUnreachableDialogComponent, { disableClose: false })
+          .open(UohPayUnreachableDialogComponent, { direction: 'rtl', disableClose: false })
           .afterClosed()
           .subscribe((retry) => {
             if (retry) {
