@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { UohLogger } from '@haifauniversity/ngx-tools';
 import { BehaviorSubject, Observable, of, Subscription, timer } from 'rxjs';
-import { catchError, distinctUntilChanged, takeUntil, map, filter, tap } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, takeUntil, map, filter, tap, share } from 'rxjs/operators';
 import { UohPaySlowConnectionDialogComponent } from '../components/uoh-pay-dialog/uoh-pay-slow-connection-dialog/uoh-pay-slow-connection-dialog.component';
 import { UohPayUnreachableDialogComponent } from '../components/uoh-pay-dialog/uoh-pay-unreachable-dialog/uoh-pay-unreachable-dialog.component';
 import { UohPay } from './uoh-pay.service';
@@ -30,7 +30,8 @@ export class UohPayConnectivity implements OnDestroy {
     this.logger.debug(`[UohPayConnectivity.check] Check connection for token ${token}`);
     const ping$ = this.pay.get(token).pipe(
       map((_) => true),
-      catchError((_) => of(false))
+      catchError((_) => of(false)),
+      share()
     );
     this.subscription.add(
       timer(this.TIMEOUT)
