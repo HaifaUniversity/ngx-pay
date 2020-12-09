@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { UohPayCloseDialogComponent } from './uoh-pay-close-dialog.component';
 
@@ -6,7 +6,7 @@ describe('UohPayCloseDialogComponent', () => {
   let component: UohPayCloseDialogComponent;
   let fixture: ComponentFixture<UohPayCloseDialogComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [UohPayCloseDialogComponent],
     }).compileComponents();
