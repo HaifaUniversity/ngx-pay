@@ -83,7 +83,7 @@ export class UohPay {
 
           return payment;
         }),
-        retryWhen((errors) => this.retryStrategy(errors, this.config.interval, this.config.maxAttempts))
+        retryWhen((errors) => this.retryStrategy(errors, this.config.retryScale, this.config.maxAttempts))
       );
     } catch (e) {
       const message = this.getErrorMessage(e);
@@ -130,17 +130,17 @@ export class UohPay {
   /**
    * Generates a strategy to retry to reach the API.
    * @param errors The errors from the retryWhen pipe.
-   * @param delay The number of milliseconds between retries.
+   * @param scale The scale of time (in ms) to calculate the delay (scale * number of attempt) between retries.
    * @param maxAttempts The maximum number of attempts.
    */
-  private retryStrategy(errors: Observable<any>, delay: number, maxAttempts: number): Observable<any> {
+  private retryStrategy(errors: Observable<any>, scale: number, maxAttempts: number): Observable<any> {
     return errors.pipe(
       // Merge the errors to assign them a index and count them.
       mergeMap((error, index) => {
         const attempt = index + 1;
-        const lapse = delay + attempt;
+        const delay = scale + attempt;
 
-        this.logger.error(`[UohPay.retryStrategy] Attempt ${attempt}: ${error} retry in ${lapse} ms`);
+        this.logger.error(`[UohPay.retryStrategy] Attempt ${attempt}: ${error} retry in ${delay} ms`);
 
         // Throw a final error after a number of unsuccessful retries.
         if (attempt > maxAttempts) {
@@ -149,7 +149,7 @@ export class UohPay {
           );
         }
 
-        return timer(lapse);
+        return timer(delay);
       })
     );
   }

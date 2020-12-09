@@ -12,8 +12,8 @@ export const UOH_TERMINAL_PLACEHOLDER = '{terminal}';
 
 export const UOH_PAY_DEFAULT_OPTIONS: UohPayOptions = {
   api: UOH_PAY_DEFAULT_API,
-  interval: 500,
-  maxAttempts: 30,
+  retryScale: 1000,
+  maxAttempts: 10,
   url: `https://direct.tranzila.com/${UOH_TERMINAL_PLACEHOLDER}/iframenew.php`,
 };
 

@@ -6,7 +6,7 @@ import { InjectionToken } from '@angular/core';
 export interface UohPayConfig {
   api: string;
   origin: string;
-  interval: number;
+  retryScale: number;
   maxAttempts: number;
   url: string;
   placeholder: string;
@@ -30,9 +30,10 @@ export interface UohPayOptions {
    */
   api?: UohPayApi | string;
   /**
-   * The interval to check with the api if the payment was received.
+   * The scale of time (in ms) between retries to check with the api if the payment was received.
+   * The delay between retries will be the number of attempt * retryScale.
    */
-  interval?: number;
+  retryScale?: number;
   /**
    * The maximum number of attempts to check with the api if the payment was received.
    */
