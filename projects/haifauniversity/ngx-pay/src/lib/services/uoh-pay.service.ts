@@ -93,6 +93,9 @@ export class UohPay {
    */
   get(token: string): Observable<UohPayment> {
     try {
+      // TODO: Consider caching the status for the token and return it if success or failure.
+      this.store.setState({ status: UohPayStatus.Pending });
+
       const url = `${this.config.api}/status/${token}`;
 
       return this.http
@@ -126,8 +129,12 @@ export class UohPay {
    * @param attempt The attempt number.
    */
   private checkAttempt(token: string, attempt: number): Observable<UohPayment> {
+    if (this.payment.status !== UohPayStatus.Pending) {
+      return of(this.payment);
+    }
+
     if (attempt < this.config.maxAttempts) {
-      this.logger.debug(`[UohPay.checkAttempt] For token:', ${token}, attempt no.: ${attempt}`);
+      this.logger.debug(`[UohPay.checkAttempt] For token: ${token}, attempt no.: ${attempt}`);
       // Return pending on error so it will retry on the next attempt.
       return this.get(token).pipe(
         catchError((_) => of({ status: UohPayStatus.Pending })),
