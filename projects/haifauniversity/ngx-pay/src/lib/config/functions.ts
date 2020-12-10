@@ -71,7 +71,7 @@ export function resolvePaymentConfig(environment: UohEnvironment, options: UohPa
   }
 
   return {
-    interval: UOH_PAY_DEFAULT_OPTIONS.interval,
+    retryScale: UOH_PAY_DEFAULT_OPTIONS.retryScale,
     maxAttempts: UOH_PAY_DEFAULT_OPTIONS.maxAttempts,
     url: UOH_PAY_DEFAULT_OPTIONS.url,
     placeholder: UOH_TERMINAL_PLACEHOLDER,
