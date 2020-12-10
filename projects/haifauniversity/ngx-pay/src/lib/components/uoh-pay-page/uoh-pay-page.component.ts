@@ -164,7 +164,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
       // Check if the message event from the iframe is from a valid origin (the payment service).
       if (this.pay.isMessageValid(event)) {
         // If the message returns the status of failure navigate to the corresponding route.
-        if (this.pay.getStatus(event) === UohPayStatus.Failure) {
+        if (this.pay.getMessageStatus(event) === UohPayStatus.Failure) {
           this.logger.debug(
             '[UohPayPageComponent.handleMessage] The MessageEvent from the iframe returned status = "failure"'
           );

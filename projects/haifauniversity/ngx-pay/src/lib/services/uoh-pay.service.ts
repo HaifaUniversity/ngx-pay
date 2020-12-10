@@ -48,7 +48,7 @@ export class UohPay {
    * For a secure implementation, use only after the isMessageValid method returned true.
    * @param event The message event.
    */
-  getStatus(event: MessageEvent): UohPayStatus {
+  getMessageStatus(event: MessageEvent): UohPayStatus {
     try {
       if (event.data.toLowerCase() === UohPayStatus.Success.toLowerCase()) {
         return UohPayStatus.Success;
@@ -61,16 +61,13 @@ export class UohPay {
   }
 
   /**
-   * Sets an interval that fires when the payment was received in the server (either success or failure).
-   * If the interval reached the maximum number of trials it throws an error.
+   * Retrieves the payment details associated with the token when the payment is complete (either success or failure).
+   * It retries in case of errors or a pending payment until the maximum number of trials (see UohPayOptions) is reached.
    * @param token The payment token.
    */
   onComplete(token: string): Observable<UohPayment> {
     try {
-      /**
-       * Tries to retrieve the payment details with each interval until the confirmation is no longer pending.
-       * The interval is limitted by a maximum number of attemps.
-       */
+      // Tries to retrieve the payment details until it is no longer pending.
       return this.get(token).pipe(
         map((payment) => {
           if (payment.status === UohPayStatus.Pending) {
@@ -94,9 +91,6 @@ export class UohPay {
    */
   get(token: string): Observable<UohPayment> {
     try {
-      // TODO: Consider caching the status for the token and return it if success or failure.
-      this.store.setState({ status: UohPayStatus.Pending });
-
       const url = `${this.config.api}/status/${token}`;
 
       return this.http
