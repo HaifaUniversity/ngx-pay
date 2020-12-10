@@ -37,7 +37,6 @@ export class UohPayConnectivity implements OnDestroy {
    * @param token The token to perform the check.
    */
   check(token: string): Observable<UohPayPing> {
-    this.logger.debug(`[UohPayConnectivity.check] Check connection for token ${token}`);
     const ping$: Observable<UohPayPing> = this.pay.get(token).pipe(
       map((payment) => (!!payment ? { status: payment.status, success: true } : { status: undefined, success: false })),
       catchError((error) => {

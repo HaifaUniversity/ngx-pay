@@ -86,24 +86,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Make sure that the service is available.
-    this.loading$.next(true);
-    this.subscription.add(
-      this.connectivity
-        .check(this.token)
-        .pipe(
-          tap((_) => this.loading$.next(false)),
-          // This component can be deactivated if the connectivity check failed.
-          tap((ping) => (this.requestConfirmation = ping.success)),
-          // Emit the result of the availability check to the parent component.
-          tap((ping) => this.ping.emit(ping.success)),
-          // If the service is not available behave as in the case that the payment failed.
-          // Continue also if the payment status is success or failure.
-          filter((ping) => !ping.success || (!!ping.status && ping.status !== UohPayStatus.Pending)),
-          // Set as paid if the ping returned success for the payment status.
-          map((ping) => ping.success && ping.status === UohPayStatus.Success)
-        )
-        .subscribe((paid) => this.paid.emit(paid))
-    );
+    this.subscription.add(this.checkConnectivity().subscribe((paid) => this.paid.emit(paid)));
     // Log the sanitized url for the terminal page.
     const url = this.sanitizedUrl ? this.sanitizedUrl.toString() : undefined;
     this.logger.info('[UohPayPageComponent.ngOnInit] - Payment initialized for url', url, 'for token', this.token);
@@ -183,6 +166,27 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
       const message = !!e && !!e.message ? e.message : 'No message';
       this.logger.error('[UohPayPageComponent.handleMessage] Error:', message);
     }
+  }
+
+  /**
+   * Returns true if the connectivity with the web service is OK, false otherwise.
+   */
+  private checkConnectivity(): Observable<boolean> {
+    this.loading$.next(true);
+    this.logger.debug(`[UohPayPageComponent.checkConnectivity] For token ${this.token}`);
+
+    return this.connectivity.check(this.token).pipe(
+      tap((_) => this.loading$.next(false)),
+      // This component can be deactivated if the connectivity check failed.
+      tap((ping) => (this.requestConfirmation = ping.success)),
+      // Emit the result of the availability check to the parent component.
+      tap((ping) => this.ping.emit(ping.success)),
+      // If the service is not available behave as in the case that the payment failed.
+      // Continue also if the payment status is success or failure.
+      filter((ping) => !ping.success || (!!ping.status && ping.status !== UohPayStatus.Pending)),
+      // Set as paid if the ping returned success for the payment status.
+      map((ping) => ping.success && ping.status === UohPayStatus.Success)
+    );
   }
 
   /**
