@@ -51,12 +51,8 @@ export class UohPay {
   getStatus(event: MessageEvent): UohPayStatus {
     try {
       if (event.data.toLowerCase() === UohPayStatus.Success.toLowerCase()) {
-        this.store.setState({ status: UohPayStatus.Success });
-
         return UohPayStatus.Success;
       } else if (event.data.toLowerCase() === UohPayStatus.Failure.toLowerCase()) {
-        this.store.setState({ status: UohPayStatus.Failure });
-
         return UohPayStatus.Failure;
       }
     } catch (e) {}
