@@ -72,8 +72,8 @@ export class UohPayUrlBuilder {
       result = result.set('maxpay', maxInstallments.toString());
     }
 
+    // Finally, add the theme parameters.
     result = result
-      .set('u71', '1')
       .set('trButtonColor', theme.button)
       .set('trBgColor', theme.background)
       .set('trTextColor', theme.text)
