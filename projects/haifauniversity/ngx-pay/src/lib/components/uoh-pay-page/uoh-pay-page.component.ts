@@ -123,7 +123,6 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
   shouldExit(event: BeforeUnloadEvent): boolean {
     this.logger.log(
       UohLogLevel.DEBUG,
-      false,
       '[UohPayPageComponent.shouldExit] Window before unload event occurred. Payment token:',
       this.token
     );
