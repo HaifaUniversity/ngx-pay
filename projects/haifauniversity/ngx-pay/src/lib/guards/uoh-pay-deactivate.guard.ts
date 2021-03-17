@@ -25,7 +25,6 @@ export class UohPayDeactivateGuard<T> implements CanDeactivate<T> {
     currentState: RouterStateSnapshot,
     nextState: RouterStateSnapshot
   ): Observable<boolean> | boolean {
-    // TODO: canDeactivate guard: Determine if the pay-page is shown, else return true.
     // Send a deactivation request to the page component using the service.
     // The deactivation logic resides in the page component itself.
     // Return the response emitted by the page.

@@ -92,7 +92,8 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     this.logger.info('[UohPayPageComponent.ngOnInit] - Payment initialized for url', url, 'for token', this.token);
     // Check if the component can be deactivated when the guard emits a deactivation request.
     this.subscription.add(
-      this.deactivate.request$
+      this.deactivate
+        .init()
         .pipe(switchMap((_) => this.canDeactivate()))
         .subscribe((deactivate) => this.deactivate.sendResponse(deactivate))
     );
@@ -101,6 +102,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.deactivate.destroy();
     this.subscription.unsubscribe();
   }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 /**
@@ -7,15 +7,46 @@ import { filter } from 'rxjs/operators';
  */
 @Injectable({ providedIn: 'root' })
 export class UohPayDeactivate {
+  /**
+   * Represents a deactivation request sent by the guard.
+   */
   private request = new Subject<void>();
+  /**
+   * Represents a deactivation response sent by the uoh-pay-page component.
+   */
   private response = new BehaviorSubject<boolean>(undefined);
-  request$ = this.request.asObservable();
+  /**
+   * Whether this service should be active. That is, should check the deactivation.
+   * This property should be false if the uoh-pay-page is not present on screen.
+   */
+  private active = false;
+
+  /**
+   * Initializes this service - check if the uoh-pay-page can be deactivated.
+   */
+  init(): Observable<void> {
+    this.active = true;
+
+    return this.request.asObservable();
+  }
+
+  /**
+   * Destroys this service - the uoh-pay-page is no longer present on screen.
+   */
+  destroy(): void {
+    this.active = false;
+  }
 
   /**
    * This method will be called by the guard, when a request to deactivate the component is emitted.
    * It will fire when the response is set.
    */
   sendRequest(): Observable<boolean> {
+    // Continue only if this service is active.
+    if (!this.active) {
+      return of(false);
+    }
+
     // Reset the response. Thus, the guard will wait for a new one.
     this.response.next(undefined);
     this.request.next();
