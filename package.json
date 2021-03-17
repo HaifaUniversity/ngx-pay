@@ -8,7 +8,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "pack-dist": "cd dist/haifauniversity/ngx-pay && npm pack",
-    "pack": "ng build --prod && npm run pack-dist"
+    "pack": "ng build --prod && npm run pack-dist",
+    "publish": "npm publish dist/haifauniversity/ngx-pay/haifauniversity-ngx-pay-*.tgz --tag=latest"
   },
   "private": true,
   "dependencies": {
