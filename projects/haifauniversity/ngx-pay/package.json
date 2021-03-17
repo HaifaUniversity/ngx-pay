@@ -1,6 +1,6 @@
 {
   "name": "@haifauniversity/ngx-pay",
-  "version": "11.0.7",
+  "version": "11.0.8",
   "publishConfig": {
     "cache": ".npm",
     "registry": "https://npm.pkg.github.com/"
