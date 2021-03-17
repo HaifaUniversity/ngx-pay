@@ -44,7 +44,7 @@ export class UohPayDeactivate {
   sendRequest(): Observable<boolean> {
     // Continue only if this service is active.
     if (!this.active) {
-      return of(false);
+      return of(true);
     }
 
     // Reset the response. Thus, the guard will wait for a new one.
