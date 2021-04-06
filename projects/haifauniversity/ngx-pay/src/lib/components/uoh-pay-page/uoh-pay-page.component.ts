@@ -147,21 +147,11 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
 
       // Check if the message event from the iframe is from a valid origin (the payment service).
       if (this.pay.isMessageValid(event)) {
-        // If the message returns the status of failure navigate to the corresponding route.
-        if (this.pay.getMessageStatus(event) === UohPayStatus.Failure) {
-          this.logger.debug(
-            '[UohPayPageComponent.handleMessage] The MessageEvent from the iframe returned status = "failure"'
-          );
-          this.paid.emit(false);
-        } else {
-          this.loading$.next(true);
-          // Else, wait until the payment service returns a completion status (either success or failure).
-          // Then, navigate to the corresponding route.
-          this.logger.debug(
-            '[UohPayPageComponent.handleMessage] The MessageEvent from the iframe returned status = "success" or "pending"'
-          );
-          this.subscription.add(this.onComplete().subscribe((success) => this.paid.emit(success)));
-        }
+        this.loading$.next(true);
+        // Wait until the payment service returns a completion status (either success or failure).
+        // Then, navigate to the corresponding route.
+        this.logger.debug('[UohPayPageComponent.handleMessage] The MessageEvent is valid.');
+        this.subscription.add(this.onComplete().subscribe((success) => this.paid.emit(success)));
       }
     } catch (e) {
       const message = !!e && !!e.message ? e.message : 'No message';
@@ -267,12 +257,12 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
       ),
       map((payment) => payment.status === UohPayStatus.Success),
       catchError((error) => {
-        this.requestConfirmation = false;
         const message = !!error && !!error.message ? error.message : 'No message';
         this.logger.error('[UohPayPageComponent.onComplete] On complete payment error:', message);
 
         return of(false);
-      })
+      }),
+      tap((_) => (this.requestConfirmation = false))
     );
   }
 }
