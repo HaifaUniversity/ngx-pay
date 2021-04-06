@@ -1,6 +1,6 @@
 {
   "name": "ngx-pay",
-  "version": "11.0.9",
+  "version": "11.0.10",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
