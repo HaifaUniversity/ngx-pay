@@ -151,7 +151,14 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
         // Wait until the payment service returns a completion status (either success or failure).
         // Then, navigate to the corresponding route.
         this.logger.debug('[UohPayPageComponent.handleMessage] The MessageEvent is valid.');
-        this.subscription.add(this.onComplete().subscribe((success) => this.paid.emit(success)));
+        this.subscription.add(
+          this.onComplete()
+            .pipe(
+              tap((_) => (this.requestConfirmation = false)),
+              tap((_) => this.loading$.next(false))
+            )
+            .subscribe((success) => this.paid.emit(success))
+        );
       }
     } catch (e) {
       const message = !!e && !!e.message ? e.message : 'No message';
@@ -261,8 +268,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
         this.logger.error('[UohPayPageComponent.onComplete] On complete payment error:', message);
 
         return of(false);
-      }),
-      tap((_) => (this.requestConfirmation = false))
+      })
     );
   }
 }
