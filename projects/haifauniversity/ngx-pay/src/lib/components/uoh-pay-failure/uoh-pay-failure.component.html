@@ -1,11 +1,7 @@
 <ng-container *ngIf="payment.status === status.Failure; else pendingTemplate">
   <div class="uoh-error uoh-pay-failure-row"><b>התשלום נכשל.</b></div>
-  <div class="uoh-error uoh-pay-failure-row">
-    {{
-      payment.creditResponse
-        ? 'קוד שגיאה: ' + payment.creditResponse + '.'
-        : 'העסקה אינה מאושרת על ידי חברת האשראי, אנא בדוק את תקפות הכרטיס או נסה עם כרטיס אחר.'
-    }}
+  <div *ngIf="payment.creditResponse" class="uoh-error uoh-pay-failure-row">
+    קוד שגיאה: {{ payment.creditResponse }}
   </div>
 </ng-container>
 
