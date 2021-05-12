@@ -57,6 +57,7 @@ export class UohPayUrlBuilder {
       .set('pdesc', params.product.description)
       .set('sum', params.sum.toString())
       .set('TranzilaToken', params.token)
+      .set('uohToken', params.token)
       .set('contact', `${params.customer.firstName} ${params.customer.lastName}`)
       .set('fname', params.customer.firstName)
       .set('lname', params.customer.lastName)
