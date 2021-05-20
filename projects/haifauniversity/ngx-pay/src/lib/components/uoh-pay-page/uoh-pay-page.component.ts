@@ -44,7 +44,7 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Whether to ask for the ID of the card holder.
    */
-  @Input() cardHolderId = false;
+  @Input() requestCardHolderId = false;
   /**
    * Fires true if the payment was successful, false otherwise.
    */
@@ -256,7 +256,7 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
   private getHostedFields(): HostedFields {
     const fields = {
       credit_card_number: {
-        selector: '#credit_card_num',
+        selector: '#credit_card_number',
         placeholder: 'מספר כרטיס אשראי',
         tabindex: 1,
       },
@@ -265,7 +265,7 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
         placeholder: '3 ספרות בגב הכרטיס',
         tabindex: 4,
       },
-      card_holder_id_number: this.cardHolderId
+      card_holder_id_number: this.requestCardHolderId
         ? undefined
         : {
             selector: '#card_holder_id_number',

@@ -3,11 +3,26 @@
   <div class="uoh-pay-page-row">נא להמתין.</div>
   <div class="uoh-pay-page-row"><b>אין לסגור את החלון.</b></div>
 </ng-container>
-<iframe
-  [src]="sanitizedUrl"
-  [attr.width]="width"
-  [attr.height]="height"
-  [attr.frameborder]="border"
-  [style.visibility]="visibility$ | async"
-></iframe>
-<button *ngIf="mock" (click)="setMock()">המשך</button>
+<form (ngSubmit)="charge()" novalidate>
+  <mat-form-field>
+    <mat-label>מספר כרטיס אשראי</mat-label>
+    <div matInput id="credit_card_number"></div>
+    <mat-error *ngIf="fields.hasError('credit_card_number')"> מספר כרטיס האשראי שהזנת אינו חוקי </mat-error>
+  </mat-form-field>
+  <mat-form-field *ngIf="requestCardHolderId">
+    <mat-label>ת״ז של בעל הכרטיס</mat-label>
+    <div matInput id="card_holder_id_number"></div>
+    <mat-error *ngIf="fields.hasError('card_holder_id_number')"> מספר ת״ז שהזנת אינו חוקי </mat-error>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>תוקף</mat-label>
+    <div matInput id="expiry"></div>
+    <mat-error *ngIf="fields.hasError('expiry')"> התוקף שהזנת אינו חוקי </mat-error>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>3 ספרות בגב הכרטיס</mat-label>
+    <div matInput id="cvv"></div>
+    <mat-error *ngIf="fields.hasError('cvv')"> 3 הספרות שהזנת אינן חוקיות </mat-error>
+  </mat-form-field>
+  <button mat-raised-button color="primary" type="submit">ביצוע תשלום</button>
+</form>

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpBackend, HttpClientModule } from '@angular/common/http';
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
-import { UohEnvironmentModule, UohLogger, UOH_ENVIRONMENT, WINDOW } from '@haifauniversity/ngx-tools';
+import { UohEnvironmentModule, UohLogger, UOH_ENVIRONMENT } from '@haifauniversity/ngx-tools';
 
 import { UOH_PAY_CONFIG } from './models/config.model';
 import { UohPay } from './services/uoh-pay.service';
