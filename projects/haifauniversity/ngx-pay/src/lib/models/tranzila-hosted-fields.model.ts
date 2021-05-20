@@ -1,5 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { UohPayCurrency } from './currency.model';
+import { UohPayLanguage } from './language.model';
 
 export interface TranzilaHostedField {
   selector: string;
@@ -46,7 +47,7 @@ export interface TranzilaHostedFieldsCharge {
   tokenize?: boolean;
   expiry_month?: string;
   expiry_year?: string;
-  response_language?: string;
+  response_language?: UohPayLanguage;
 }
 
 export interface TranzilaHostedFieldsChargeError {

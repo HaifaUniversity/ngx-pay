@@ -73,7 +73,7 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
     // Make sure that the service is available.
     this.subscription.add(this.checkConnectivity().subscribe((paid) => this.paid.emit(paid)));
     // Log the token for the initialized payment.
-    this.logger.info('[UohPayPageComponent.ngOnInit] - Payment initialized for token', this.data.token);
+    this.logger.info('[UohPayPageComponent.ngOnInit] Payment initialized for token', this.data.token);
     // Check if the component can be deactivated when the guard emits a deactivation request.
     this.subscription.add(
       this.deactivate
@@ -93,7 +93,18 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.fields.init();
+    try {
+      this.fields.init();
+    } catch (e) {
+      // TODO: Display a dialog when hosted fields could not be initialized.
+      const message = !!e && !!e.message ? e.message : 'No message';
+      this.logger.error(
+        '[UohPayPageComponent.ngAfterViewInit] Tranzila hosted fields could not be initialized for token:',
+        this.data.token,
+        'error:',
+        message
+      );
+    }
   }
 
   ngOnDestroy(): void {
@@ -101,12 +112,15 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  /**
+   * Submits the data for payment to the 3rd party service.
+   */
   charge(): void {
     const config = {
       terminal_name: this.data.terminal,
       amount: this.data.sum.toString(),
       currency_code: this.data.currency,
-      response_language: this.data.language === UohPayLanguage.Hebrew ? 'hebrew' : 'english',
+      response_language: this.data.language,
     };
     this.fields.charge(config);
   }
