@@ -1,23 +1,14 @@
-import {
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  HostBinding,
-  HostListener,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { UohLogger } from '@haifauniversity/ngx-tools';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
+import { UohPayLanguage } from '../../models/language.model';
 import { UohPayPageData } from '../../models/page-data.model';
 import { UohPayment } from '../../models/payment.model';
 import { UohPayStatus } from '../../models/status.model';
-import { HostedFields, TranzilaHostedFields } from '../../models/tranzila-hosted-fields.model';
+import { HostedFields } from '../../models/tranzila-hosted-fields.model';
 import { UohPayConnectivity } from '../../services/uoh-pay-connectivity.service';
 import { UohPayDeactivate } from '../../services/uoh-pay-deactivate.service';
 import { UohPay } from '../../services/uoh-pay.service';
@@ -78,6 +69,7 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.fields = this.getHostedFields();
     // Make sure that the service is available.
     this.subscription.add(this.checkConnectivity().subscribe((paid) => this.paid.emit(paid)));
     // Log the token for the initialized payment.
@@ -89,10 +81,19 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
         .pipe(switchMap((_) => this.canDeactivate()))
         .subscribe((deactivate) => this.deactivate.sendResponse(deactivate))
     );
+    this.subscription.add(
+      this.fields.charged$
+        .pipe(
+          filter((charged) => !!charged),
+          switchMap((_) => this.onComplete(this.data.token)),
+          tap((_) => (this.requestConfirmation = false))
+        )
+        .subscribe((success) => this.paid.emit(success))
+    );
   }
 
   ngAfterViewInit(): void {
-    this.fields = this.getHostedFields();
+    this.fields.init();
   }
 
   ngOnDestroy(): void {
@@ -100,37 +101,14 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  private charge(): void {
-    this.loading$.next(true);
-    // Wait until the payment service returns a completion status (either success or failure).
-    // Then, navigate to the corresponding route.
-    this.logger.debug('[UohPayPageComponent.charge] Charging for token:', this.data.token, '.');
-    this.subscription.add(
-      this.onComplete()
-        .pipe(
-          tap((_) => (this.requestConfirmation = false)),
-          tap((_) => this.loading$.next(false))
-        )
-        .subscribe((success) => this.paid.emit(success))
-    );
-  }
-
-  /**
-   * This method will be called when the payment iframe posts a message to this component (the parent window).
-   * @param event The message event from the iframe.
-   */
-  @HostListener('window:message', ['$event'])
-  handleMessage(event: MessageEvent): void {
-    try {
-      this.logger.debug('[UohPayPageComponent.handleMessage] Handle message event:', JSON.stringify(event));
-
-      // Check if the message event from the iframe is from a valid origin (the payment service).
-      if (this.pay.isMessageValid(event)) {
-      }
-    } catch (e) {
-      const message = !!e && !!e.message ? e.message : 'No message';
-      this.logger.error('[UohPayPageComponent.handleMessage] Error:', message);
-    }
+  charge(): void {
+    const config = {
+      terminal_name: this.data.terminal,
+      amount: this.data.sum.toString(),
+      currency_code: this.data.currency,
+      response_language: this.data.language === UohPayLanguage.Hebrew ? 'hebrew' : 'english',
+    };
+    this.fields.charge(config);
   }
 
   /**
@@ -227,8 +205,10 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
    * Fires when the payment is complete (checking with the stored token).
    * It returns true if the payment is successful, false otherwise.
    */
-  private onComplete(): Observable<boolean> {
-    return this.pay.onComplete(this.data.token).pipe(
+  private onComplete(token: string): Observable<boolean> {
+    this.logger.debug('[UohPayPageComponent.onComplete] On complete for token', token);
+
+    return this.pay.onComplete(token).pipe(
       tap((payment) =>
         this.logger.info('[UohPayPageComponent.onComplete] On complete payment', JSON.stringify(payment))
       ),

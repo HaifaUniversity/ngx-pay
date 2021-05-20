@@ -46,7 +46,7 @@ export interface TranzilaHostedFieldsCharge {
   tokenize?: boolean;
   expiry_month?: string;
   expiry_year?: string;
-  response_language?: 'english' | 'hebrew';
+  response_language?: string;
 }
 
 export interface TranzilaHostedFieldsChargeError {
@@ -70,7 +70,7 @@ declare const TzlaHostedFields: TranzilaHostedFieldsBuilder;
  * Wrapper class for the tranzila hosted fields.
  */
 export class HostedFields {
-  private _paid = new BehaviorSubject<boolean>(undefined);
+  private _charged = new BehaviorSubject<boolean>(undefined);
   private _valid = new BehaviorSubject<boolean>(false);
   private _error = new BehaviorSubject<string>(undefined);
   private _cardType = new BehaviorSubject<string>(undefined);
@@ -81,13 +81,13 @@ export class HostedFields {
     card_holder_id_number: false,
   };
   private handler: TranzilaHostedFieldsHandler;
-  paid$ = this._paid.asObservable();
+  charged$ = this._charged.asObservable();
   valid$ = this._valid.asObservable();
   error$ = this._error.asObservable();
   cardType$ = this._cardType.asObservable();
 
-  get paid(): boolean {
-    return this._paid.getValue();
+  get charged(): boolean {
+    return this._charged.getValue();
   }
 
   get valid(): boolean {
@@ -102,8 +102,10 @@ export class HostedFields {
     return this._cardType.getValue();
   }
 
-  constructor(public config: TranzilaHostedFieldsConfig) {
-    this.handler = TzlaHostedFields.create(config);
+  constructor(public config: TranzilaHostedFieldsConfig) {}
+
+  init(): void {
+    this.handler = TzlaHostedFields.create(this.config);
     this.handler.onEvent('cardTypeChange', this.onCardNumberChanged);
     this.handler.onEvent('blur', this.validityChange);
   }
@@ -151,7 +153,7 @@ export class HostedFields {
 
     this._valid.next(valid);
     this._error.next(errorMessage);
-    this._paid.next(paid);
+    this._charged.next(paid);
   };
 
   private isValidationError(error: TranzilaHostedFieldsChargeError): boolean {
