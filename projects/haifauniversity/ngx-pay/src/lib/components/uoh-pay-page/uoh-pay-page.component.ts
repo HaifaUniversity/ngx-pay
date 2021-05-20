@@ -8,7 +8,8 @@ import { UohPayLanguage } from '../../models/language.model';
 import { UohPayPageData } from '../../models/page-data.model';
 import { UohPayment } from '../../models/payment.model';
 import { UohPayStatus } from '../../models/status.model';
-import { HostedFields } from '../../models/tranzila-hosted-fields.model';
+import { HostedFields, TranzilaHostedFieldsPlan } from '../../models/tranzila-hosted-fields.model';
+import { UohPayType, UOH_PAY_TYPE_ID } from '../../models/type.model';
 import { UohPayConnectivity } from '../../services/uoh-pay-connectivity.service';
 import { UohPayDeactivate } from '../../services/uoh-pay-deactivate.service';
 import { UohPay } from '../../services/uoh-pay.service';
@@ -121,6 +122,7 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
       amount: this.data.sum.toString(),
       currency_code: this.data.currency,
       response_language: this.data.language,
+      payment_plan: this.getType(this.data.type) as TranzilaHostedFieldsPlan,
     };
     this.fields.charge(config);
   }
@@ -267,5 +269,13 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
       },
     };
     return new HostedFields({ sandbox: false, styles: {}, fields });
+  }
+
+  /**
+   * Retrieves the payment type. If undefined, returns the single payment type.
+   * @param type The payment type.
+   */
+  private getType(type: UohPayType): string {
+    return UOH_PAY_TYPE_ID[!!type ? type : UohPayType.Single];
   }
 }

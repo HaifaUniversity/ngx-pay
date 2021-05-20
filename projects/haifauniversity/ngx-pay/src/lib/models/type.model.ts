@@ -16,15 +16,15 @@ export enum UohPayType {
   Installments = 'installments',
 }
 
-type UohPayTypeId = Record<UohPayType, number>;
+type UohPayTypeId = Record<UohPayType, string>;
 
 /**
  * The payment type (or cred_type in Tranzila).
  */
 export const UOH_PAY_TYPE_ID: UohPayTypeId = {
-  single: 1,
-  credit: 6,
-  installments: 8,
+  single: '1',
+  credit: '6',
+  installments: '8',
 };
 
 // TODO: Move the labels to i18n.
