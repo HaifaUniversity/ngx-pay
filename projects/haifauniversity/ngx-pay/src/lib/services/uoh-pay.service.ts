@@ -34,33 +34,6 @@ export class UohPay {
   }
 
   /**
-   * Checks if a message event that comes from the payment service (iframe).
-   * @param event The message event.
-   */
-  isMessageValid(event: MessageEvent): boolean {
-    this.logger.debug('[UohPay.isMessageValid] Event origin:', event.origin, 'config.origin:', this.config.origin);
-
-    return event.origin === this.config.origin;
-  }
-
-  /**
-   * Retrieves the payment status from the message event that comes from the payment service (iframe).
-   * For a secure implementation, use only after the isMessageValid method returned true.
-   * @param event The message event.
-   */
-  getMessageStatus(event: MessageEvent): UohPayStatus {
-    try {
-      if (event.data.toLowerCase() === UohPayStatus.Success.toLowerCase()) {
-        return UohPayStatus.Success;
-      } else if (event.data.toLowerCase() === UohPayStatus.Failure.toLowerCase()) {
-        return UohPayStatus.Failure;
-      }
-    } catch (e) {}
-
-    return UohPayStatus.Pending;
-  }
-
-  /**
    * Retrieves the payment details associated with the token when the payment is complete (either success or failure).
    * It retries in case of errors or a pending payment until the maximum number of trials (see UohPayOptions) is reached.
    * @param token The payment token.
@@ -93,16 +66,14 @@ export class UohPay {
     try {
       const url = `${this.config.api}/status/${token}`;
 
-      return this.http
-        .get<UohPayment>(url, { headers: this.HEADERS })
-        .pipe(
-          tap((payment) => this.store.setState(payment)),
-          catchError((error) => {
-            const message = this.getErrorMessage(error);
+      return this.http.get<UohPayment>(url, { headers: this.HEADERS }).pipe(
+        tap((payment) => this.store.setState(payment)),
+        catchError((error) => {
+          const message = this.getErrorMessage(error);
 
-            return throwError(message);
-          })
-        );
+          return throwError(message);
+        })
+      );
     } catch (e) {
       const message = this.getErrorMessage(e);
 

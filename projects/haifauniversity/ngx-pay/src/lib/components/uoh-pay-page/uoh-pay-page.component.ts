@@ -122,7 +122,18 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
       amount: this.data.sum.toString(),
       currency_code: this.data.currency,
       response_language: this.data.language,
+      card_holder_id_number: this.data.customer.id,
       payment_plan: this.getType(this.data.type) as TranzilaHostedFieldsPlan,
+      uohToken: this.data.token,
+      TranzilaToken: this.data.token,
+      DCdisable: this.data.product.code,
+      pdesc: this.data.product.description,
+      contact: `${this.data.customer.firstName} ${this.data.customer.lastName}`,
+      fname: this.data.customer.firstName,
+      lname: this.data.customer.lastName,
+      myid: this.data.customer.id,
+      studentid: this.data.customer.id,
+      email: this.data.customer.email,
     };
     this.fields.charge(config);
   }

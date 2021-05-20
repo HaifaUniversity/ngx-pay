@@ -37,6 +37,16 @@ export enum TranzilaHostedFieldsPlan {
 export interface TranzilaHostedFieldsCharge {
   terminal_name: string;
   amount: string;
+  uohToken: string;
+  TranzilaToken: string;
+  DCdisable: string;
+  pdesc: string;
+  contact: string;
+  fname: string;
+  lname: string;
+  myid: string;
+  studentid: string;
+  email: string;
   first_installment_amount?: string;
   other_installments_amount?: string;
   total_installments_number?: string;
