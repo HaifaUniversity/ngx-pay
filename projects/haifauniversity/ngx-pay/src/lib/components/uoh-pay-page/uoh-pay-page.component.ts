@@ -17,13 +17,11 @@ import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
 import { UohPayPageData } from '../../models/page-data.model';
 import { UohPayment } from '../../models/payment.model';
 import { UohPayStatus } from '../../models/status.model';
-import { TranzilaHostedFields, TranzilaHostedFieldsBuilder } from '../../models/tranzila-hosted-fields.model';
+import { HostedFields, TranzilaHostedFields } from '../../models/tranzila-hosted-fields.model';
 import { UohPayConnectivity } from '../../services/uoh-pay-connectivity.service';
 import { UohPayDeactivate } from '../../services/uoh-pay-deactivate.service';
 import { UohPay } from '../../services/uoh-pay.service';
 import { UohPayCloseDialogComponent } from '../uoh-pay-dialog/uoh-pay-close-dialog/uoh-pay-close-dialog.component';
-
-declare const TzlaHostedFields: TranzilaHostedFieldsBuilder;
 
 /**
  * Displays a terminal payment page in an iframe and handles the payment success or failure.
@@ -44,9 +42,17 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   visibility$ = this.loading$.asObservable().pipe(map((loading) => (loading ? 'hidden' : 'visible')));
   /**
+   * The tranzila hosted fields.
+   */
+  fields: HostedFields;
+  /**
    * The pay page configuration details.
    */
   @Input() data: UohPayPageData;
+  /**
+   * Whether to ask for the ID of the card holder.
+   */
+  @Input() cardHolderId = false;
   /**
    * Fires true if the payment was successful, false otherwise.
    */
@@ -56,10 +62,6 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   @Output() ping = new EventEmitter<boolean>();
   @HostBinding('class') class = 'uoh-pay-page';
-  /**
-   * The tranzila hosted fields.
-   */
-  private fields: TranzilaHostedFields;
   /**
    * True if the user should be asked to confirm the component deactivation.
    */
@@ -91,26 +93,12 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.fields = this.getHostedFields();
-    // this.fields.onEvent('cardTypeChange', this.onCardNumberChanged);
-    this.fields.onEvent('blur', this.validityChange);
   }
 
   ngOnDestroy(): void {
     this.deactivate.destroy();
     this.subscription.unsubscribe();
   }
-
-  private validityChange = (result: { field: string }) => {
-    if (result.field === 'expiry') {
-      this.expiryValid = true;
-    } else if (result.field === 'credit_card_number') {
-      this.cardNumValid = true;
-    } else if (result.field === 'card_holder_id_number') {
-      this.cardHolderValid = true;
-    } else if (result.field === 'cvv') {
-      this.cvvValid = true;
-    }
-  };
 
   private charge(): void {
     this.loading$.next(true);
@@ -258,7 +246,7 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
    * Generates the tranzila hosted fields.
    * @returns The hosted fields object to interact with tranzila.
    */
-  private getHostedFields(): TranzilaHostedFields {
+  private getHostedFields(): HostedFields {
     const fields = {
       credit_card_number: {
         selector: '#credit_card_num',
@@ -270,14 +258,13 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
         placeholder: '3 ספרות בגב הכרטיס',
         tabindex: 4,
       },
-      card_holder_id_number:
-        this.data && this.data.customer && this.data.customer.id
-          ? undefined
-          : {
-              selector: '#card_holder_id_number',
-              placeholder: 'מספר ת״ז של בעל הכרטיס',
-              tabindex: 2,
-            },
+      card_holder_id_number: this.cardHolderId
+        ? undefined
+        : {
+            selector: '#card_holder_id_number',
+            placeholder: 'מספר ת״ז של בעל הכרטיס',
+            tabindex: 2,
+          },
       expiry: {
         selector: '#expiry',
         placeholder: 'תוקף',
@@ -285,6 +272,6 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
         tabindex: 3,
       },
     };
-    return TzlaHostedFields.create({ sandbox: false, styles: {}, fields });
+    return new HostedFields({ sandbox: false, styles: {}, fields });
   }
 }
