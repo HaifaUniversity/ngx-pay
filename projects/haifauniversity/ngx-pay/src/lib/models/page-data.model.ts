@@ -8,7 +8,11 @@ import { UohPayType } from './type.model';
 /**
  * The parameters to send to a payment terminal.
  */
-export interface UohPayParams {
+export interface UohPayPageData {
+  /**
+   * The payment terminal.
+   */
+  terminal: string;
   /**
    * The details of the customer that is buying the product.
    */
@@ -43,7 +47,7 @@ export interface UohPayParams {
    */
   currency?: UohPayCurrency;
   /**
-   * The theme for the iframe in the payment page.
+   * Custom extra fields to send to the terminal.
    */
-  theme?: UohPayTheme;
+  customFields?: { [key: string]: string };
 }
