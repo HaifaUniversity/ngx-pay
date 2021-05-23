@@ -2,7 +2,6 @@ import { UohPayCurrency } from './currency.model';
 import { UohPayCustomer } from './customer.model';
 import { UohPayLanguage } from './language.model';
 import { UohPayProduct } from './product.model';
-import { UohPayTheme } from './theme.model';
 import { UohPayType } from './type.model';
 
 /**
