@@ -8,23 +8,34 @@
     <div class="field">
       <label for="credit_card_number">מספר כרטיס אשראי</label>
       <div id="credit_card_number" class="input"></div>
-      <div class="uoh-error" *ngIf="fields.hasError('credit_card_number')">מספר כרטיס האשראי שהזנת אינו חוקי</div>
+      <div class="uoh-error" *ngIf="fields.hasError('credit_card_number')">
+        {{ fields.getError('credit_card_number') }}
+      </div>
     </div>
-    <div class="field card-holder" [class.visible]="requestCardHolderId">
+    <div class="field" *ngIf="requestCardHolderId">
       <label for="card_holder_id_number">ת״ז של בעל הכרטיס</label>
       <div id="card_holder_id_number" class="input"></div>
-      <div class="uoh-error" *ngIf="fields.hasError('card_holder_id_number')">מספר ת״ז שהזנת אינו חוקי</div>
+      <div class="uoh-error" *ngIf="fields.hasError('card_holder_id_number')">
+        {{ fields.getError('card_holder_id_number') }}
+      </div>
     </div>
     <div class="field">
       <label for="expiry">תוקף</label>
       <div id="expiry" class="input"></div>
-      <div class="uoh-error" *ngIf="fields.hasError('expiry')">התוקף שהזנת אינו חוקי</div>
+      <div class="uoh-error" *ngIf="fields.hasError('expiry')">
+        {{ fields.getError('expiry') }}
+      </div>
     </div>
     <div class="field">
       <label for="cvv">3 ספרות בגב הכרטיס</label>
       <div id="cvv" class="input"></div>
-      <div class="uoh-error" *ngIf="fields.hasError('cvv')">3 הספרות שהזנת אינן חוקיות</div>
+      <div class="uoh-error" *ngIf="fields.hasError('cvv')">
+        {{ fields.getError('cvv') }}
+      </div>
     </div>
-    <button mat-raised-button color="primary" type="submit">ביצוע תשלום</button>
+    <div *ngIf="fields.error" class="uoh-error">
+      {{ fields.error }}
+    </div>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!fields.valid">ביצוע תשלום</button>
   </form>
 </div>

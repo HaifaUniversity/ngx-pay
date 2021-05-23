@@ -60,9 +60,15 @@ export interface TranzilaHostedFieldsCharge {
   response_language?: UohPayLanguage;
 }
 
+export interface TranzilaHostedFieldsChargeFieldError {
+  code: string;
+  param: string;
+  message: string;
+}
+
 export interface TranzilaHostedFieldsChargeError {
   error: string;
-  messages: Array<{ param: string }>;
+  messages: Array<TranzilaHostedFieldsChargeFieldError>;
   error_description: string;
 }
 
@@ -86,11 +92,11 @@ export class HostedFields {
   private _error = new BehaviorSubject<string>(undefined);
   private _cardType = new BehaviorSubject<string>(undefined);
   private _charging = new BehaviorSubject<boolean>(undefined);
-  private validationErrors: { [key in keyof TranzilaHostedFields]: boolean } = {
-    credit_card_number: false,
-    cvv: false,
-    expiry: false,
-    card_holder_id_number: false,
+  private validationErrors: { [key in keyof TranzilaHostedFields]: TranzilaHostedFieldsChargeFieldError | null } = {
+    credit_card_number: null,
+    cvv: null,
+    expiry: null,
+    card_holder_id_number: null,
   };
   private handler: TranzilaHostedFieldsHandler;
   charged$ = this._charged.asObservable();
@@ -104,7 +110,13 @@ export class HostedFields {
   }
 
   get valid(): boolean {
-    return this._valid.getValue();
+    for (const field in this.validationErrors) {
+      if (!!this.validationErrors[field]) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   get error(): string {
@@ -120,11 +132,15 @@ export class HostedFields {
   init(): void {
     this.handler = TzlaHostedFields.create(this.config);
     this.handler.onEvent('cardTypeChange', this.onCardNumberChanged);
-    this.handler.onEvent('blur', this.validityChange);
+    this.handler.onEvent('blur', this.onTouched);
   }
 
   hasError(field: keyof TranzilaHostedFields): boolean {
-    return this.validationErrors[field];
+    return !!this.validationErrors[field];
+  }
+
+  getError(field: keyof TranzilaHostedFields): string {
+    return this.hasError(field) ? this.validationErrors[field].message : '';
   }
 
   charge(config: TranzilaHostedFieldsCharge): void {
@@ -132,16 +148,12 @@ export class HostedFields {
     this.handler.charge(config, this.onCharge);
   }
 
-  private validityChange = (result: { field: keyof TranzilaHostedFields }) => {
-    let valid = true;
-
-    for (const field in this.config.fields) {
-      const fieldValid = result.field === field;
-      valid = valid ? valid : false;
-      this.validationErrors[field] = !fieldValid;
+  private onTouched = (result: { field: keyof TranzilaHostedFields }) => {
+    this.validationErrors[result.field] = null;
+    this._valid.next(this.valid);
+    if (!!this.error) {
+      this._error.next('');
     }
-
-    this._valid.next(valid);
   };
 
   private onCardNumberChanged = (result: { cardType: string }) => {
@@ -149,23 +161,21 @@ export class HostedFields {
   };
 
   private onCharge = (error: TranzilaHostedFieldsChargeError) => {
-    let valid = true;
     let paid = true;
     let errorMessage = undefined;
 
     if (error) {
       if (this.isValidationError(error)) {
         error.messages.forEach((message) => {
-          this.validationErrors[message.param] = true;
+          this.validationErrors[message.param] = message;
         });
-        valid = false;
       } else {
         errorMessage = error.error_description;
       }
       paid = false;
     }
 
-    this._valid.next(valid);
+    this._valid.next(this.valid && !errorMessage);
     this._error.next(errorMessage);
     this._charged.next(paid);
     this._charging.next(false);

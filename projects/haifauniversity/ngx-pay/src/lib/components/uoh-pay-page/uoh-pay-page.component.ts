@@ -295,7 +295,7 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
       tabindex: 2,
     };
 
-    return this.requestCardHolderId ? fields : { ...fields, card_holder_id_number };
+    return this.requestCardHolderId ? { ...fields, card_holder_id_number } : fields;
   }
 
   /**

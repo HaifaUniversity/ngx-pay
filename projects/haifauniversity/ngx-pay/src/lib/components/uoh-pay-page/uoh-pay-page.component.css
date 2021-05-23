@@ -22,7 +22,3 @@
 .field .input:hover {
   border-color: rgba(0, 0, 0, 0.2);
 }
-
-.field.card-holder:not(.visible) {
-  display: none;
-}
