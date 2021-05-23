@@ -1,3 +1,28 @@
 .uoh-pay-page-row {
   margin: 16px 0;
 }
+
+.field {
+  margin: 16px;
+}
+
+.field .input {
+  font-size: 14px;
+  border-width: 1px;
+  border-radius: 4px;
+  border-color: rgba(0, 0, 0, 0.12);
+  border-style: solid;
+  transition: 0.3s border ease-in-out;
+  box-sizing: border-box;
+  width: 100%;
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 0.75rem;
+}
+
+.field .input:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.field.card-holder:not(.visible) {
+  display: none;
+}

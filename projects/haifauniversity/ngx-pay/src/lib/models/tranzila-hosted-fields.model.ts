@@ -85,6 +85,7 @@ export class HostedFields {
   private _valid = new BehaviorSubject<boolean>(false);
   private _error = new BehaviorSubject<string>(undefined);
   private _cardType = new BehaviorSubject<string>(undefined);
+  private _charging = new BehaviorSubject<boolean>(undefined);
   private validationErrors: { [key in keyof TranzilaHostedFields]: boolean } = {
     credit_card_number: false,
     cvv: false,
@@ -96,6 +97,7 @@ export class HostedFields {
   valid$ = this._valid.asObservable();
   error$ = this._error.asObservable();
   cardType$ = this._cardType.asObservable();
+  charging$ = this._charging.asObservable();
 
   get charged(): boolean {
     return this._charged.getValue();
@@ -126,6 +128,7 @@ export class HostedFields {
   }
 
   charge(config: TranzilaHostedFieldsCharge): void {
+    this._charging.next(true);
     this.handler.charge(config, this.onCharge);
   }
 
@@ -165,6 +168,7 @@ export class HostedFields {
     this._valid.next(valid);
     this._error.next(errorMessage);
     this._charged.next(paid);
+    this._charging.next(false);
   };
 
   private isValidationError(error: TranzilaHostedFieldsChargeError): boolean {

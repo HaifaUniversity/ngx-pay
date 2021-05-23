@@ -2,9 +2,8 @@ import { AfterViewInit, Component, EventEmitter, HostBinding, Input, OnDestroy, 
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { UohLogger } from '@haifauniversity/ngx-tools';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, merge, Observable, of, Subscription } from 'rxjs';
 import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
-import { UohPayLanguage } from '../../models/language.model';
 import { UohPayPageData } from '../../models/page-data.model';
 import { UohPayment } from '../../models/payment.model';
 import { UohPayStatus } from '../../models/status.model';
@@ -28,11 +27,15 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * True to show a loading message.
    */
-  loading$ = new BehaviorSubject<boolean>(false);
+  _loading = new BehaviorSubject<boolean>(false);
   /**
    * The visibility of the payment iframe.
    */
-  visibility$ = this.loading$.asObservable().pipe(map((loading) => (loading ? 'hidden' : 'visible')));
+  visibility$ = this._loading.asObservable().pipe(map((loading) => (loading ? 'hidden' : 'visible')));
+  /**
+   * True when loading or charging.
+   */
+  loading$: Observable<boolean>;
   /**
    * The tranzila hosted fields.
    */
@@ -71,6 +74,7 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.fields = this.getHostedFields();
+    this.loading$ = merge(this.fields.charging$, this._loading.asObservable());
     // Make sure that the service is available.
     this.subscription.add(this.checkConnectivity().subscribe((paid) => this.paid.emit(paid)));
     // Log the token for the initialized payment.
@@ -98,13 +102,14 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
       this.fields.init();
     } catch (e) {
       // TODO: Display a dialog when hosted fields could not be initialized.
-      const message = !!e && !!e.message ? e.message : 'No message';
+      const message = this.getErrorMessage(e);
       this.logger.error(
         '[UohPayPageComponent.ngAfterViewInit] Tranzila hosted fields could not be initialized for token:',
         this.data.token,
         'error:',
         message
       );
+      console.error('Tranzila hosted fields could not be initialized for token:', message);
     }
   }
 
@@ -135,6 +140,12 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
       studentid: this.data.customer.id,
       email: this.data.customer.email,
     };
+    this.logger.info(
+      '[UohPayPageComponent.charge] Charge for token',
+      this.data.token,
+      'config:',
+      JSON.stringify(config)
+    );
     this.fields.charge(config);
   }
 
@@ -142,11 +153,11 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
    * Returns true if the connectivity with the web service is OK, false otherwise.
    */
   private checkConnectivity(): Observable<boolean> {
-    this.loading$.next(true);
+    this._loading.next(true);
     this.logger.debug(`[UohPayPageComponent.checkConnectivity] For token ${this.data.token}`);
 
     return this.connectivity.check(this.data.token).pipe(
-      tap((_) => this.loading$.next(false)),
+      tap((_) => this._loading.next(false)),
       // This component can be deactivated if the connectivity check failed.
       tap((ping) => (this.requestConfirmation = ping.success)),
       // Emit the result of the availability check to the parent component.
@@ -206,7 +217,7 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
    * If so, it emits the result using the paid event emitter.
    */
   private checkPayment(): Observable<UohPayment> {
-    this.loading$.next(true);
+    this._loading.next(true);
     this.logger.debug('[UohPayPageComponent.checkPayment] Check payment for token:', this.data.token);
 
     return this.pay.get(this.data.token).pipe(
@@ -223,7 +234,7 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
           this.paid.emit(success);
         }
 
-        this.loading$.next(false);
+        this._loading.next(false);
       })
     );
   }
@@ -254,6 +265,12 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
    * @returns The hosted fields object to interact with tranzila.
    */
   private getHostedFields(): HostedFields {
+    const fields = this.getFields();
+
+    return new HostedFields({ sandbox: false, styles: { body: { direction: 'rtl' } }, fields });
+  }
+
+  private getFields(): any {
     const fields = {
       credit_card_number: {
         selector: '#credit_card_number',
@@ -265,21 +282,20 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
         placeholder: '3 ספרות בגב הכרטיס',
         tabindex: 4,
       },
-      card_holder_id_number: this.requestCardHolderId
-        ? undefined
-        : {
-            selector: '#card_holder_id_number',
-            placeholder: 'מספר ת״ז של בעל הכרטיס',
-            tabindex: 2,
-          },
       expiry: {
         selector: '#expiry',
         placeholder: 'תוקף',
-        version: '2',
+        version: '1',
         tabindex: 3,
       },
     };
-    return new HostedFields({ sandbox: false, styles: {}, fields });
+    const card_holder_id_number = {
+      selector: '#card_holder_id_number',
+      placeholder: 'מספר ת״ז של בעל הכרטיס',
+      tabindex: 2,
+    };
+
+    return this.requestCardHolderId ? fields : { ...fields, card_holder_id_number };
   }
 
   /**
@@ -288,5 +304,20 @@ export class UohPayPageComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private getType(type: UohPayType): string {
     return UOH_PAY_TYPE_ID[!!type ? type : UohPayType.Single];
+  }
+
+  /**
+   * Retrieves the error message from a catched error.
+   * @param e The catched error.
+   * @returns The error message.
+   */
+  private getErrorMessage(e: Error): string {
+    try {
+      if (!!e) {
+        return !!e.message ? e.message : JSON.stringify(e);
+      }
+    } catch (e) {}
+
+    return 'No message';
   }
 }
