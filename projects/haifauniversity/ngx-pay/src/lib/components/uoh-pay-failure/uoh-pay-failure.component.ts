@@ -10,7 +10,6 @@ import { UohPayStatus } from '../../models/status.model';
   styleUrls: ['./uoh-pay-failure.component.css'],
 })
 export class UohPayFailureComponent implements OnInit {
-  mailto: string;
   status = UohPayStatus;
   /**
    * The payment details.
