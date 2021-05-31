@@ -19,7 +19,7 @@ export const UOH_PAY_DEFAULT_OPTIONS: UohPayOptions = {
 
 export const UOH_PAY_DEFAULT_CONTACT: UohPayContact = {
   name: 'מרכז שירות ותמיכה',
-  email: 'helpdesk@campus.haifa.ac.il',
+  email: 'helpdesk@univ.haifa.ac.il',
   website: 'https://stud-hc.haifa.ac.il/he',
 };
 
