@@ -22,6 +22,7 @@ export class UohPayMockModule {
     if (!document.URL.includes('localhost')) {
       console.warn('The UohPayMockModule should be used for local development (localhost) only.');
     }
+    console.log("hello");
   }
 
   /**
