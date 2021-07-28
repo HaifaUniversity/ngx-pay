@@ -75,6 +75,7 @@ export function resolvePaymentConfig(environment: UohEnvironment, options: UohPa
     maxAttempts: UOH_PAY_DEFAULT_OPTIONS.maxAttempts,
     url: UOH_PAY_DEFAULT_OPTIONS.url,
     placeholder: UOH_TERMINAL_PLACEHOLDER,
+    overrideState: false,
     ...options,
     api,
     origin,

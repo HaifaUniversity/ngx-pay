@@ -15,6 +15,7 @@ export const UOH_PAY_DEFAULT_OPTIONS: UohPayOptions = {
   retryScale: 1000,
   maxAttempts: 10,
   url: `https://direct.tranzila.com/${UOH_TERMINAL_PLACEHOLDER}/iframenew.php`,
+  overrideState: false
 };
 
 export const UOH_PAY_DEFAULT_CONTACT: UohPayContact = {

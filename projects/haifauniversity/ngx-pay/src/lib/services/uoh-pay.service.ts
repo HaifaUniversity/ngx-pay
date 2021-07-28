@@ -96,7 +96,13 @@ export class UohPay {
       return this.http
         .get<UohPayment>(url, { headers: this.HEADERS })
         .pipe(
-          tap((payment) => this.store.setState(payment)),
+          tap((payment) => {
+            if (this.config.overrideState === true && this.store.overrideState) {
+              this.store.overrideState(payment);
+            } else {
+              this.store.setState(payment);
+            }
+          }),
           catchError((error) => {
             const message = this.getErrorMessage(error);
 

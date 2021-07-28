@@ -10,6 +10,7 @@ export interface UohPayConfig {
   maxAttempts: number;
   url: string;
   placeholder: string;
+  overrideState: boolean;
 }
 
 /**
@@ -42,6 +43,10 @@ export interface UohPayOptions {
    * The base url for the payment page (the iframe) - it should contain '{terminal}' as a placeholder for the terminal name.
    */
   url?: string;
+  /**
+   * Use the overrideState method of UohStore
+   */
+  overrideState?: boolean;
 }
 
 export const UOH_PAY_CONFIG = new InjectionToken<UohPayConfig>(
