@@ -55,7 +55,7 @@ export class UohPay {
       } else if (event.data.toLowerCase() === UohPayStatus.Failure.toLowerCase()) {
         return UohPayStatus.Failure;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     return UohPayStatus.Pending;
   }
@@ -105,6 +105,7 @@ export class UohPay {
           }),
           catchError((error) => {
             const message = this.getErrorMessage(error);
+            this.logger.error(`[UohPayConnectivity.check] ERROR while getting payment status: ${message}`);
 
             return throwError(message);
           })

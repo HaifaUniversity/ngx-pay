@@ -25,7 +25,7 @@ export class UohPayConnectivity implements OnDestroy {
   private ping = new BehaviorSubject<UohPayPing>(undefined);
   private subscription = new Subscription();
 
-  constructor(private dialog: MatDialog, private logger: UohLogger, private pay: UohPay) {}
+  constructor(private dialog: MatDialog, private logger: UohLogger, private pay: UohPay) { }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
