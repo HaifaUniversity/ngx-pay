@@ -17,4 +17,5 @@ export interface UohPayment {
   type?: UohPayType;
   cardNumber?: string;
   installments?: UohPayInstallments;
+  bit_pay?:boolean;
 }

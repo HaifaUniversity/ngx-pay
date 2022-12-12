@@ -1,58 +1,61 @@
 <div class="uoh-pay-success-wrapper" role="rowgroup">
-  <div class="uoh-pay-success-row uoh-success" role="row">התשלום התקבל בהצלחה</div>
+  <div class="uoh-pay-success-row uoh-success" role="row">{{lang=='he'?'התשלום התקבל בהצלחה':'The payment was successfully received'}}</div>
   <div class="uoh-pay-success-row" role="row">
-    <span class="uoh-pay-success-label"> סה״כ הסכום ששולם: </span>
+    <span class="uoh-pay-success-label"> {{lang=='he'?'סה״כ הסכום ששולם':'The total amount paid'}}: </span>
     <span class="uoh-pay-success-value">
       {{ payment.sum | currency: payment.currency:'symbol':'1.2-2' }}
     </span>
   </div>
-  <mat-divider></mat-divider>
-  <div class="uoh-pay-success-row" role="row">
-    <span class="uoh-pay-success-label"> מספר אישור: </span>
+  <mat-divider *ngIf="!payment.bit_pay"></mat-divider>
+  <div *ngIf="!payment.bit_pay" class="uoh-pay-success-row" role="row">
+    <span class="uoh-pay-success-label">{{lang=='he'?'מספר אישור':'confirmation number'}} : </span>
     <span class="uoh-pay-success-value">
       {{ payment.confirmationCode }}
     </span>
   </div>
   <mat-divider></mat-divider>
   <div class="uoh-pay-success-row" role="row">
-    <span class="uoh-pay-success-label"> תאריך התשלום: </span>
+    <span class="uoh-pay-success-label">{{lang=='he'?'תאריך התשלום':'the date of payment'}} : </span>
     <span class="uoh-pay-success-value">
       {{ payment.receivedAt | date: 'dd/MM/yyyy HH:mm:ss' }}
     </span>
   </div>
-  <mat-divider></mat-divider>
-  <div class="uoh-pay-success-row" role="row">
-    <span class="uoh-pay-success-label"> שולם בכרטיס שמסתיים בספרות: </span>
+  <mat-divider *ngIf="!payment.bit_pay"></mat-divider>
+  <div *ngIf="!payment.bit_pay" class="uoh-pay-success-row" role="row">
+    <span class="uoh-pay-success-label">{{lang=='he'?' שולם בכרטיס שמסתיים בספרות':'Last 4 digits of card number'}}: </span>
     <span class="uoh-pay-success-value">
       {{ payment.cardNumber }}
     </span>
   </div>
   <mat-divider></mat-divider>
   <div class="uoh-pay-success-row" role="row">
-    <span class="uoh-pay-success-label"> אופן התשלום: </span>
-    <span class="uoh-pay-success-value">
-      {{ types[payment.type] }}
+    <span class="uoh-pay-success-label"> {{lang=='he'?'אופן התשלום':'Payment method'}}: </span>
+    <span *ngIf="!payment.bit_pay" class="uoh-pay-success-value">
+      {{lang=='he'? types[payment.type] :typesEN[payment.type]}}
+    </span>
+    <span *ngIf="payment.bit_pay" class="uoh-pay-success-value">
+      {{lang=='he'?'שולם באמצעות BIT':'Paid via BIT'}}
     </span>
   </div>
 
   <ng-container *ngIf="payment.installments">
     <mat-divider></mat-divider>
     <div *ngIf="payment.installments.quantity" class="uoh-pay-success-row" role="row">
-      <span class="uoh-pay-success-label"> מספר תשלומים: </span>
+      <span class="uoh-pay-success-label">{{lang=='he'?'מספר תשלומים':'Number of payments'}} : </span>
       <span class="uoh-pay-success-value">
         {{ payment.installments.quantity }}
       </span>
     </div>
     <mat-divider></mat-divider>
     <div *ngIf="payment.installments.firstSum" class="uoh-pay-success-row" role="row">
-      <span class="uoh-pay-success-label"> סכום תשלום ראשון: </span>
+      <span class="uoh-pay-success-label">{{lang=='he'?'סכום תשלום ראשון':'First payment amount'}} : </span>
       <span class="uoh-pay-success-value">
         {{ payment.installments.firstSum | currency: payment.currency:true:'1.2-2' }}
       </span>
     </div>
     <mat-divider></mat-divider>
     <div *ngIf="payment.installments.sum" class="uoh-pay-success-row" role="row">
-      <span class="uoh-pay-success-label"> סכום תשלום עוקב: </span>
+      <span class="uoh-pay-success-label">{{lang=='he'?'סכום תשלום עוקב':'subsequent payment amount'}}: </span>
       <span class="uoh-pay-success-value">
         {{ payment.installments.sum | currency: payment.currency:true:'1.2-2' }}
       </span>

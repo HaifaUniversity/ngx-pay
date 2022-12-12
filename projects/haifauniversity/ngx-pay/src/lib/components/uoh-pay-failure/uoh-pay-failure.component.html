@@ -1,25 +1,53 @@
 <ng-container *ngIf="payment.status === status.Failure; else pendingTemplate">
-  <div class="uoh-error uoh-pay-failure-row"><b>התשלום נכשל.</b></div>
-  <div *ngIf="payment.creditResponse" class="uoh-error uoh-pay-failure-row">
-    קוד שגיאה: {{error }}
-    <!-- payment.creditResponse  -->
-  </div>
+  <ng-container *ngIf="lang=='he' ; else engLang ">
+    <div class="uoh-error uoh-pay-failure-row"><b>התשלום נכשל.</b></div>
+    <div *ngIf="payment.creditResponse" class="uoh-error uoh-pay-failure-row">
+     {{payment.creditResponse}}: {{error }}
+      <!-- payment.creditResponse  -->
+    </div>
+  </ng-container>
+  <ng-template #engLang style="direction: ltr;">
+    <div class="uoh-error uoh-pay-failure-row"><b>the payment failed.</b></div>
+    <div *ngIf="payment.creditResponse" class="uoh-error uoh-pay-failure-row">
+     {{payment.creditResponse}}: {{error }}
+      <!-- payment.creditResponse  -->
+    </div>
+  </ng-template>
 </ng-container>
 
 <ng-template #pendingTemplate>
+  <ng-container *ngIf="lang=='he' ; else engLangPending">
+    <div class="uoh-error uoh-pay-failure-row">
+      <div><b>לא ניתן לשלוף את פרטי התשלום.</b></div>
+      <div>
+        נא לפנות אל <a [href]="contact.website" target="_blank">{{ contact.name }}</a>.
+      </div>
+      <ng-container *ngIf="token">
+        <div class="uoh-error uoh-pay-failure-row">
+          קוד השגיאה: <span>{{ token }}.</span>
+        </div>
+        <div class="uoh-pay-failure-row">
+          <uoh-pay-failure-contact [email]="contact.email" [subject]="'שגיאה בשליפת פרטי תשלום - קוד שגיאה: ' + token"
+            [body]="'לא ניתן לשלוף את פרטי התשלום - קוד שגיאה: ' + token" [lang]="lang"></uoh-pay-failure-contact>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+  <ng-template #engLangPending style="direction: ltr;">
   <div class="uoh-error uoh-pay-failure-row">
-    <div><b>לא ניתן לשלוף את פרטי התשלום.</b></div>
+    <div><b>The payment details cannot be retrieved.</b></div>
     <div>
-      נא לפנות אל <a [href]="contact.website" target="_blank">{{ contact.name }}</a>.
+      Please contact<a [href]="contact.website" target="_blank">{{ contact.name }}</a>.
     </div>
     <ng-container *ngIf="token">
       <div class="uoh-error uoh-pay-failure-row">
-        קוד השגיאה: <span>{{ token }}.</span>
+        the error code: <span>{{ token }}.</span>
       </div>
       <div class="uoh-pay-failure-row">
         <uoh-pay-failure-contact [email]="contact.email" [subject]="'שגיאה בשליפת פרטי תשלום - קוד שגיאה: ' + token"
-          [body]="'לא ניתן לשלוף את פרטי התשלום - קוד שגיאה: ' + token"></uoh-pay-failure-contact>
+          [body]="'לא ניתן לשלוף את פרטי התשלום - קוד שגיאה: ' + token" [lang]="lang"></uoh-pay-failure-contact>
       </div>
     </ng-container>
   </div>
+  </ng-template>
 </ng-template>

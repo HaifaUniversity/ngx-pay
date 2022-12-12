@@ -1,7 +1,7 @@
 <ng-container *ngIf="loading$ | async">
   <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar>
-  <div class="uoh-pay-page-row">נא להמתין.</div>
-  <div class="uoh-pay-page-row"><b>אין לסגור את החלון.</b></div>
+  <div class="uoh-pay-page-row">{{this.lang=='he'?'נא להמתין.':'Please wait.'}}</div>
+  <div class="uoh-pay-page-row"><b>{{this.lang=='he'?'אין לסגור את החלון.':'Don\'t close the window.'}}</b></div>
 </ng-container>
 <iframe
   [src]="sanitizedUrl"
@@ -10,4 +10,5 @@
   [attr.frameborder]="border"
   [style.visibility]="visibility$ | async"
 ></iframe>
-<button *ngIf="mock" (click)="setMock()">המשך</button>
+<button *ngIf="mock" (click)="setMock()">{{this.lang=='he'?'המשך':'Continue'}}</button>
+

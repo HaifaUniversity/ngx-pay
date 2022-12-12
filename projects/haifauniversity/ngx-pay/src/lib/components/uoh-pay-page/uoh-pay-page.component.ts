@@ -54,6 +54,8 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    * The token for the payment attempt.
    */
   @Input() token: string;
+
+  @Input() lang: string="he";
   /**
    * The url for the terminal to execute the payment.
    */
@@ -90,6 +92,8 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     // Log the sanitized url for the terminal page.
     const url = this.sanitizedUrl ? this.sanitizedUrl.toString() : undefined;
     this.logger.info('[UohPayPageComponent.ngOnInit] - Payment initialized for url', url, 'for token', this.token);
+
+    this.logger.info('[UohPayPageComponent.ngOnInit] - Payment initialized for url -- lang:',this.lang);
     // Check if the component can be deactivated when the guard emits a deactivation request.
     this.subscription.add(
       this.deactivate
@@ -99,6 +103,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     );
     // Use the mock for local development.
     this.mock = this.pay instanceof UohPayMock;
+
   }
 
   ngOnDestroy(): void {
@@ -131,7 +136,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
 
     // Ask the user if he/she really wants to unload this application.
     event.preventDefault();
-    event.returnValue = 'התשלום טרם הסתיים?';
+    event.returnValue = this.lang=='he'?'התשלום טרם הסתיים?':'The payment has not yet been completed?';
 
     return false;
   }

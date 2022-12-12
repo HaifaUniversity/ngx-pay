@@ -33,3 +33,9 @@ export const UOH_PAY_TYPE_NAME_HE: Record<UohPayType, string> = {
   credit: 'תשלומים בקרדיט',
   installments: 'תשלומים',
 };
+
+export const UOH_PAY_TYPE_NAME_EN: Record<UohPayType, string> = {
+  single: 'Single payment',
+  credit: 'Credit payments',
+  installments: 'Payments',
+};

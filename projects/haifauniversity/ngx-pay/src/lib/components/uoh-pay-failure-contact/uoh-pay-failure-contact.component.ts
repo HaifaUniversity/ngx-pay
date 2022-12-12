@@ -9,6 +9,6 @@ export class UohPayFailureContactComponent {
   @Input() email: string;
   @Input() subject: string;
   @Input() body: string;
-
+  @Input() lang: string ="he";
   constructor() {}
 }
