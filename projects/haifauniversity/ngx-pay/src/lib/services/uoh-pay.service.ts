@@ -38,8 +38,6 @@ export class UohPay {
    * @param event The message event.
    */
   isMessageValid(event: MessageEvent): boolean {
-    this.logger.debug('[UohPay.isMessageValid] Event origin:', event.origin, 'config.origin:', this.config.origin);
-
     return event.origin === this.config.origin;
   }
 

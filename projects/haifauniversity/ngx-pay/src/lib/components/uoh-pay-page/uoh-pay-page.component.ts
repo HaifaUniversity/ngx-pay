@@ -55,7 +55,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   @Input() token: string;
 
-  @Input() lang: string="he";
+  @Input() lang: string = "he";
   /**
    * The url for the terminal to execute the payment.
    */
@@ -84,7 +84,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     private pay: UohPay,
     private deactivate: UohPayDeactivate,
     private connectivity: UohPayConnectivity
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Make sure that the service is available.
@@ -93,7 +93,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
     const url = this.sanitizedUrl ? this.sanitizedUrl.toString() : undefined;
     this.logger.info('[UohPayPageComponent.ngOnInit] - Payment initialized for url', url, 'for token', this.token);
 
-    this.logger.info('[UohPayPageComponent.ngOnInit] - Payment initialized for url -- lang:',this.lang);
+    this.logger.info('[UohPayPageComponent.ngOnInit] - Payment initialized for url -- lang:', this.lang);
     // Check if the component can be deactivated when the guard emits a deactivation request.
     this.subscription.add(
       this.deactivate
@@ -136,7 +136,7 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
 
     // Ask the user if he/she really wants to unload this application.
     event.preventDefault();
-    event.returnValue = this.lang=='he'?'התשלום טרם הסתיים?':'The payment has not yet been completed?';
+    event.returnValue = this.lang == 'he' ? 'התשלום טרם הסתיים?' : 'The payment has not yet been completed?';
 
     return false;
   }
@@ -147,11 +147,13 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
    */
   @HostListener('window:message', ['$event'])
   handleMessage(event: MessageEvent): void {
-    try {
-      this.logger.debug('[UohPayPageComponent.handleMessage] Handle message event:', JSON.stringify(event));
+    if (this.pay.isMessageValid(event)) {
+      try {
+        this.logger.debug('[UohPay.isMessageValid] Event origin:', event.origin);
+        this.logger.debug('[UohPayPageComponent.handleMessage] Handle message event:', JSON.stringify(event));
 
-      // Check if the message event from the iframe is from a valid origin (the payment service).
-      if (this.pay.isMessageValid(event)) {
+        // Check if the message event from the iframe is from a valid origin (the payment service).
+
         this.loading$.next(true);
         // Wait until the payment service returns a completion status (either success or failure).
         // Then, navigate to the corresponding route.
@@ -164,10 +166,11 @@ export class UohPayPageComponent implements OnInit, OnDestroy {
             )
             .subscribe((success) => this.paid.emit(success))
         );
+
+      } catch (e) {
+        const message = !!e && !!e.message ? e.message : 'No message';
+        this.logger.error('[UohPayPageComponent.handleMessage] Error:', message);
       }
-    } catch (e) {
-      const message = !!e && !!e.message ? e.message : 'No message';
-      this.logger.error('[UohPayPageComponent.handleMessage] Error:', message);
     }
   }
 
