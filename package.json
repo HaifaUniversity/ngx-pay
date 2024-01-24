@@ -9,7 +9,7 @@
     "lint": "ng lint",
     "pack-dist": "cd dist/haifauniversity/ngx-pay && npm pack",
     "pack": "ng build --prod && npm run pack-dist",
-    "publish": "npm publish dist/haifauniversity/ngx-pay/haifauniversity-ngx-pay-12.0.19.tgz --tag=latest"
+    "publish": "npm publish dist/haifauniversity/ngx-pay/haifauniversity-ngx-pay-12.0.20.tgz --tag=latest"
   },
   "private": false,
   "dependencies": {
